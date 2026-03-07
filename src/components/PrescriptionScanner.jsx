@@ -169,10 +169,37 @@ const styles = `
   .btn-translate{display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid rgba(16,185,129,0.25);border-radius:10px;background:rgba(16,185,129,0.07);color:var(--emerald);font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;}
   .btn-translate:hover{background:rgba(16,185,129,0.15);}
   .btn-translate:disabled{opacity:0.4;cursor:not-allowed;}
-  .lang-select{padding:8px 12px;border:1px solid rgba(255,255,255,0.1);border-radius:10px;background:rgba(255,255,255,0.04);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;cursor:pointer;}
+  .lang-select{padding:8px 12px;border:1px solid rgba(255,255,255,0.1);border-radius:10px;background:#1e293b;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;cursor:pointer;}
+  .lang-select option{background:#1e293b;color:#f0f9ff;}
   .translated-box{background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.15);border-radius:14px;padding:14px 16px;}
   .translated-hdr{font-family:'JetBrains Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:1.8px;color:var(--emerald);margin-bottom:8px;}
   .translated-text{font-size:13px;color:var(--text-dim);line-height:1.7;white-space:pre-wrap;}
+
+  /* ── DRUG INTERACTIONS ── */
+  .interaction-box{background:linear-gradient(135deg,rgba(239,68,68,0.06),rgba(251,146,60,0.03));border:1px solid rgba(239,68,68,0.2);border-radius:14px;padding:14px 16px;}
+  .interaction-hdr{font-family:'JetBrains Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:1.8px;color:rgba(252,165,165,0.8);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+  .interaction-hdr::after{content:'';flex:1;height:1px;background:rgba(239,68,68,0.15);}
+  .interaction-item{padding:8px 10px;border-radius:9px;background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.12);margin-bottom:6px;font-size:12px;color:rgba(252,165,165,0.85);line-height:1.5;}
+  .interaction-item:last-child{margin-bottom:0;}
+  .interaction-pair{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(251,146,60,0.9);margin-bottom:3px;font-weight:600;}
+  .no-interactions{font-size:12px;color:rgba(16,185,129,0.7);display:flex;align-items:center;gap:6px;}
+  .btn-interactions{display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid rgba(239,68,68,0.25);border-radius:10px;background:rgba(239,68,68,0.07);color:rgba(252,165,165,0.85);font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+  .btn-interactions:hover{background:rgba(239,68,68,0.14);}
+  .btn-interactions:disabled{opacity:0.4;cursor:not-allowed;}
+  /* ── CONFIDENCE SCORE ── */
+  .confidence-bar{display:flex;align-items:center;gap:8px;padding:5px 16px 0 19px;}
+  .conf-label{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text-faint);white-space:nowrap;}
+  .conf-track{flex:1;height:3px;background:rgba(255,255,255,0.06);border-radius:99px;overflow:hidden;}
+  .conf-fill{height:100%;border-radius:99px;transition:width 0.6s ease;}
+  .conf-pct{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-faint);white-space:nowrap;}
+  /* ── MULTI-PAGE ── */
+  .multi-images{display:flex;gap:8px;flex-wrap:wrap;}
+  .thumb-wrap{position:relative;width:80px;height:80px;border-radius:10px;overflow:hidden;border:1px solid var(--glass-border);flex-shrink:0;}
+  .thumb-wrap img{width:100%;height:100%;object-fit:cover;}
+  .thumb-del{position:absolute;top:3px;right:3px;width:16px;height:16px;border-radius:50%;background:rgba(239,68,68,0.8);border:none;color:#fff;font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;}
+  .btn-add-page{width:80px;height:80px;border-radius:10px;border:1.5px dashed rgba(255,255,255,0.12);background:rgba(255,255,255,0.02);color:var(--text-faint);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;}
+  .btn-add-page:hover{border-color:rgba(6,182,212,0.4);color:var(--cyan);}
+  .page-count-badge{font-family:'JetBrains Mono',monospace;font-size:10px;padding:2px 8px;background:var(--cyan-soft);border:1px solid rgba(6,182,212,0.2);border-radius:99px;color:var(--cyan);}
 `;
 
 const SCAN_STEPS = [
@@ -202,6 +229,9 @@ export default function PrescriptionScanner() {
   const [lang, setLang] = useState("te");
   const [translating, setTranslating] = useState(false);
   const [translated, setTranslated] = useState(null);
+  const [extraImages, setExtraImages] = useState([]);
+  const [checking, setChecking] = useState(false);
+  const [interactions, setInteractions] = useState(null);
 
   const handleFile = useCallback((file) => {
     if (!file || !file.type.startsWith("image/")) return;
@@ -255,7 +285,8 @@ export default function PrescriptionScanner() {
             role: "user",
             content: [
               { type: "image_url", image_url: { url: "data:" + imageBase64.type + ";base64," + imageBase64.data } },
-              { type: "text", text: prompt }
+              ...extraImages.map(img => ({ type: "image_url", image_url: { url: "data:" + img.type + ";base64," + img.base64 } })),
+              { type: "text", text: prompt + (extraImages.length > 0 ? "\nNote: This prescription spans " + (1 + extraImages.length) + " pages. Extract medications from all pages." : "") }
             ]
           }]
         })
@@ -283,7 +314,7 @@ export default function PrescriptionScanner() {
   const resetAll = () => {
     setPhase("upload"); setImage(null); setImageBase64(null);
     setResult(null); setError(null); setScanProgress(0);
-    setActiveScanStep(0); setDoneScanSteps([]); setUploadExiting(false); setTranslated(null);
+    setActiveScanStep(0); setDoneScanSteps([]); setUploadExiting(false); setTranslated(null); setExtraImages([]); setInteractions(null);
   };
 
   const saveToHistory = (data) => {
@@ -397,6 +428,46 @@ export default function PrescriptionScanner() {
     setTranslating(false);
   };
 
+  const addExtraPage = (file) => {
+    if (!file || !file.type.startsWith("image/")) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setExtraImages(prev => [...prev, { url: URL.createObjectURL(file), base64: e.target.result.split(",")[1], type: file.type }]);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removeExtraPage = (idx) => setExtraImages(prev => prev.filter((_, i) => i !== idx));
+
+  const checkInteractions = async () => {
+    if (!result || !result.medications || result.medications.length < 2) return;
+    setChecking(true); setInteractions(null);
+    const names = result.medications.map(m => m.name).join(", ");
+    try {
+      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
+        body: JSON.stringify({
+          model: "meta-llama/llama-4-scout-17b-16e-instruct",
+          max_tokens: 800,
+          messages: [{ role: "user", content: "Check for drug interactions between these medications: " + names + ". Return ONLY JSON (no markdown): {interactions:[{drug1,drug2,severity,description}],safe:boolean}. If none, return {interactions:[],safe:true}." }]
+        })
+      });
+      const data = await res.json();
+      if (data.choices) {
+        let text = data.choices[0].message.content.replaceAll("```json","").replaceAll("```","").trim();
+        setInteractions(JSON.parse(text));
+      }
+    } catch(e) { setInteractions({ interactions: [], safe: true, error: true }); }
+    setChecking(false);
+  };
+
+  const getConfColor = (score) => {
+    if (score >= 85) return "var(--emerald)";
+    if (score >= 60) return "var(--cyan)";
+    return "rgba(251,146,60,0.9)";
+  };
+
   const medCount = result?.medications?.length || 0;
   const step1Done = phase === "scanning" || phase === "results";
   const step2Active = phase === "results";
@@ -471,6 +542,27 @@ export default function PrescriptionScanner() {
                           <span className="history-badge">{h.medCount} meds</span>
                         </div>
                       ))}
+                    </div>
+                  </div>
+                )}
+                {image && (
+                  <div>
+                    <div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"8px"}}>
+                      <span style={{fontFamily:"JetBrains Mono,monospace",fontSize:"9.5px",textTransform:"uppercase",letterSpacing:"1.8px",color:"var(--text-faint)"}}>Pages</span>
+                      <span className="page-count-badge">{1 + extraImages.length} page{(1 + extraImages.length) > 1 ? "s" : ""}</span>
+                    </div>
+                    <div className="multi-images">
+                      <div className="thumb-wrap"><img src={image} alt="p1" /></div>
+                      {extraImages.map((img, i) => (
+                        <div className="thumb-wrap" key={i}>
+                          <img src={img.url} alt={"p"+(i+2)} />
+                          <button className="thumb-del" onClick={() => removeExtraPage(i)}>✕</button>
+                        </div>
+                      ))}
+                      <label className="btn-add-page" title="Add page">
+                        <input type="file" accept="image/*" style={{display:"none"}} onChange={e => { if(e.target.files[0]) addExtraPage(e.target.files[0]); e.target.value=""; }} />
+                        +
+                      </label>
                     </div>
                   </div>
                 )}
@@ -551,6 +643,13 @@ export default function PrescriptionScanner() {
                               <span>{med.description}</span>
                             </div>
                           )}
+                          {med.confidence !== undefined && med.confidence !== null && (
+                            <div className="confidence-bar">
+                              <span className="conf-label">Confidence</span>
+                              <div className="conf-track"><div className="conf-fill" style={{width: med.confidence + "%", background: getConfColor(med.confidence)}} /></div>
+                              <span className="conf-pct">{med.confidence}%</span>
+                            </div>
+                          )}
                           <div className="mc-div" />
                           <div className="mc-details">
                             {notNull(med.frequency) && <div className="mc-det"><span className="dlbl">Frequency</span><span className="dval">{med.frequency}</span></div>}
@@ -585,6 +684,27 @@ export default function PrescriptionScanner() {
                         </div>
                       ))}
                     </div>
+                  </div>
+                )}
+                {result && result.medications && result.medications.length >= 2 && (
+                  <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
+                    <button className="btn-interactions" onClick={checkInteractions} disabled={checking}>
+                      {checking ? "⏳ Checking..." : "⚠️ Check Drug Interactions"}
+                    </button>
+                    {interactions && (
+                      <div className="interaction-box">
+                        <div className="interaction-hdr">⚠️ Drug Interactions</div>
+                        {interactions.safe && interactions.interactions.length === 0
+                          ? <div className="no-interactions">✅ No known interactions found between these medications.</div>
+                          : (interactions.interactions || []).map((ix, i) => (
+                            <div className="interaction-item" key={i}>
+                              <div className="interaction-pair">{ix.drug1} ↔ {ix.drug2} · {ix.severity || "moderate"}</div>
+                              <div>{ix.description}</div>
+                            </div>
+                          ))
+                        }
+                      </div>
+                    )}
                   </div>
                 )}
                 {result && (
