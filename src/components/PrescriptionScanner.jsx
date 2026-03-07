@@ -304,120 +304,312 @@ const styles = `
   }
   .btn-add-thumb:hover { border-color: var(--accent); color: var(--accent); background: rgba(108,99,255,0.08); }
 
-  /* ── STATS GRID ── */
-  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-  @media(max-width:480px){ .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; } }
-  .stat-tile {
+  /* ════════════════════════════════════════════════════
+     RESULTS PAGE — PREMIUM REDESIGN v3
+  ════════════════════════════════════════════════════ */
+
+  /* wrapper */
+  .results-wrap {
+    display: flex; flex-direction: column; gap: 0;
+    animation: resultsIn 0.6s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  @keyframes resultsIn { from{opacity:0;transform:translateY(16px);} to{opacity:1;transform:translateY(0);} }
+
+  /* ── HERO BANNER ── */
+  .res-hero {
+    position: relative; overflow: hidden;
+    border-radius: 20px; margin-bottom: 20px;
+    background: linear-gradient(135deg, #0d0f1e 0%, #111428 50%, #0d1520 100%);
+    border: 1px solid rgba(108,99,255,0.2);
+    padding: 28px 32px;
+  }
+  .res-hero::before {
+    content:''; position:absolute; top:-60px; right:-40px; width:300px; height:300px;
+    border-radius:50%; pointer-events:none;
+    background: radial-gradient(circle, rgba(108,99,255,0.12) 0%, transparent 70%);
+  }
+  .res-hero::after {
+    content:''; position:absolute; bottom:-40px; left:20px; width:200px; height:200px;
+    border-radius:50%; pointer-events:none;
+    background: radial-gradient(circle, rgba(45,212,191,0.07) 0%, transparent 65%);
+  }
+  .res-hero-top {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px; margin-bottom: 20px; position: relative; z-index:1;
+  }
+  .res-hero-title-group { display:flex; align-items:center; gap:14px; }
+  .res-hero-icon {
+    width: 48px; height: 48px; border-radius: 14px; flex-shrink:0;
+    background: linear-gradient(135deg, rgba(108,99,255,0.3), rgba(167,139,250,0.15));
+    border: 1px solid rgba(108,99,255,0.3);
+    display: flex; align-items: center; justify-content: center; font-size: 22px;
+    box-shadow: 0 0 20px rgba(108,99,255,0.2);
+  }
+  .res-hero-title { font-family:'Playfair Display',serif; font-size:clamp(18px,3vw,24px); color:var(--text); font-weight:700; line-height:1.2; }
+  .res-hero-sub { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text-faint); letter-spacing:1.5px; margin-top:3px; }
+  .res-hero-badges { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .res-pill-done {
+    display:flex; align-items:center; gap:6px; padding:5px 14px; border-radius:99px;
+    background:rgba(45,212,191,0.1); border:1px solid rgba(45,212,191,0.25);
+    font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--teal); white-space:nowrap;
+  }
+  .res-pill-dot { width:5px; height:5px; border-radius:50%; background:var(--teal); box-shadow:0 0 6px var(--teal); animation:dotPulse 2s ease-in-out infinite; }
+  @keyframes dotPulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+  .res-pill-model {
+    padding:5px 14px; border-radius:99px;
+    background:rgba(108,99,255,0.1); border:1px solid rgba(108,99,255,0.2);
+    font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--accent2);
+  }
+
+  /* stat tiles inside hero */
+  .res-stats {
+    display: grid; grid-template-columns: repeat(4,1fr); gap: 12px;
+    position: relative; z-index:1;
+  }
+  @media(max-width:640px){ .res-stats{grid-template-columns:repeat(2,1fr);} }
+  .res-stat {
     padding: 14px 16px; border-radius: 14px;
-    background: var(--surface2); border: 1px solid var(--border);
-    display: flex; flex-direction: column; gap: 5px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    transition: all 0.2s; cursor: default;
   }
-  .stat-ico { font-size: 16px; }
-  .stat-val { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--accent2); line-height: 1; }
-  .stat-lbl { font-size: 11px; color: var(--text-faint); }
-
-  /* ── SECTION DIVIDER ── */
-  .sec-div {
-    display: flex; align-items: center; gap: 10px;
-    font-family: 'JetBrains Mono', monospace; font-size: 9.5px;
-    text-transform: uppercase; letter-spacing: 2px; color: var(--text-faint);
+  .res-stat:hover { background: rgba(255,255,255,0.06); transform: translateY(-1px); }
+  .res-stat-icon { font-size:18px; margin-bottom:6px; }
+  .res-stat-num {
+    font-family:'Playfair Display',serif;
+    font-size: clamp(22px,3vw,28px); line-height:1; font-weight:700; margin-bottom:3px;
   }
-  .sec-div::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .res-stat:nth-child(1) .res-stat-num { color:var(--accent2); }
+  .res-stat:nth-child(2) .res-stat-num { color:var(--teal); }
+  .res-stat:nth-child(3) .res-stat-num { color:var(--gold); }
+  .res-stat:nth-child(4) .res-stat-num { color:#f472b6; }
+  .res-stat-lbl { font-size:10.5px; color:var(--text-faint); font-weight:500; }
 
-  /* ── INFO BOX ── */
-  .info-box {
-    background: var(--surface2); border: 1px solid var(--border);
-    border-left: 2px solid var(--teal); border-radius: 14px; padding: 14px 16px;
+  /* action row below hero */
+  .res-actions-bar {
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+    margin-bottom: 20px;
   }
-  .info-hdr { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; text-transform: uppercase; letter-spacing: 1.8px; color: var(--teal); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-  .info-hdr::after { content: ''; flex: 1; height: 1px; background: rgba(45,212,191,0.15); }
-  .info-row { display: flex; align-items: baseline; gap: 10px; font-size: 13px; margin-bottom: 6px; }
-  .info-row:last-child { margin-bottom: 0; }
-  .info-key { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: var(--text-faint); min-width: 60px; text-transform: uppercase; letter-spacing: 0.8px; }
-  .info-val { color: var(--text); font-weight: 500; }
 
-  /* ── NOTES BOX ── */
-  .notes-box { background: var(--surface2); border: 1px solid var(--border); border-left: 2px solid var(--accent); border-radius: 14px; padding: 14px 16px; }
-  .notes-lbl { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; text-transform: uppercase; letter-spacing: 1.8px; color: var(--accent2); margin-bottom: 7px; }
-  .notes-txt { font-size: 13px; color: var(--text-dim); line-height: 1.65; }
+  /* ── MAIN TWO-COLUMN LAYOUT ── */
+  .res-body {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 20px;
+    align-items: start;
+  }
+  @media(max-width:900px){ .res-body { grid-template-columns:1fr; } }
+
+  /* ── LEFT: med list ── */
+  .res-med-col { display:flex; flex-direction:column; gap:12px; }
+  .res-col-hdr {
+    display:flex; align-items:center; gap:10px;
+    font-family:'JetBrains Mono',monospace; font-size:10px;
+    text-transform:uppercase; letter-spacing:2px; color:var(--text-faint);
+    padding-bottom:10px; border-bottom:1px solid var(--border);
+  }
+  .res-col-count {
+    margin-left:auto; padding:2px 10px; border-radius:99px;
+    background:rgba(108,99,255,0.12); border:1px solid rgba(108,99,255,0.2);
+    color:var(--accent2); font-size:9px;
+  }
 
   /* ── MED CARD ── */
   .med-card {
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 16px; overflow: hidden; position: relative;
-    transition: border-color 0.2s, transform 0.2s;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 18px; overflow:hidden; position:relative;
+    transition: all 0.25s ease;
   }
-  .med-card:hover { border-color: rgba(108,99,255,0.3); transform: translateY(-1px); }
-  .med-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: linear-gradient(180deg, var(--accent), var(--gold), var(--teal)); }
-  .mc-top { padding: 14px 16px 0 18px; display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
-  .mc-name-row { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; flex: 1; }
-  .mc-name { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--text); font-weight: 600; }
-  .mc-badge {
-    padding: 3px 10px; border-radius: 8px;
-    background: rgba(245,166,35,0.1); border: 1px solid rgba(245,166,35,0.25);
-    font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--gold);
-    white-space: nowrap; font-weight: 600; flex-shrink: 0;
+  .med-card:hover {
+    border-color: rgba(108,99,255,0.35);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.35), 0 0 0 1px rgba(108,99,255,0.1);
+    transform: translateY(-2px);
   }
-  .mc-desc { padding: 6px 16px 0 18px; font-size: 12px; color: var(--text-faint); font-style: italic; line-height: 1.5; }
-  .mc-div { margin: 10px 16px 0 18px; height: 1px; background: var(--border); }
-  .mc-details { padding: 10px 16px 14px 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .mc-det { display: flex; flex-direction: column; gap: 2px; }
-  .mc-det.fw { grid-column: 1 / -1; }
-  .dlbl { font-family: 'JetBrains Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-faint); }
-  .dval { font-size: 12.5px; color: var(--text); font-weight: 500; line-height: 1.4; }
+  /* numbered accent strip on left */
+  .med-card-strip {
+    position:absolute; left:0; top:0; bottom:0; width:3px;
+    background: linear-gradient(180deg, var(--accent), var(--accent2), var(--teal));
+  }
 
-  /* ── CONFIDENCE BAR ── */
-  .conf-row { display: flex; align-items: center; gap: 8px; padding: 4px 16px 0 18px; }
-  .conf-lbl { font-family: 'JetBrains Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-faint); white-space: nowrap; }
-  .conf-track { flex: 1; height: 3px; background: var(--surface3); border-radius: 99px; overflow: hidden; }
-  .conf-fill { height: 100%; border-radius: 99px; transition: width 0.6s ease; }
-  .conf-pct { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text-faint); }
-
-  /* ── SEARCH BTNS ── */
+  /* card header */
+  .mc-hdr {
+    padding: 16px 18px 14px 20px;
+    display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+  }
+  .mc-hdr-left { flex:1; display:flex; flex-direction:column; gap:4px; }
+  .mc-num {
+    font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase;
+    letter-spacing:2.5px; color:var(--accent); font-weight:600;
+  }
+  .mc-name {
+    font-family:'Playfair Display',serif; font-size:19px; color:var(--text);
+    font-weight:700; line-height:1.25;
+  }
+  .mc-tags { display:flex; align-items:center; flex-wrap:wrap; gap:5px; margin-top:2px; }
+  .mc-dose-badge {
+    padding:3px 10px; border-radius:8px;
+    background:rgba(245,166,35,0.12); border:1px solid rgba(245,166,35,0.3);
+    font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--gold); font-weight:700;
+  }
   .btn-search {
-    display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px;
-    border: 1px solid var(--border2); border-radius: 7px;
-    background: var(--surface2); color: var(--teal);
-    font-family: 'JetBrains Mono', monospace; font-size: 10px;
-    cursor: pointer; text-decoration: none; transition: all 0.2s; margin-left: 4px; font-weight: 500;
+    display:inline-flex; align-items:center; gap:3px; padding:3px 9px;
+    border:1px solid var(--border2); border-radius:7px;
+    background:var(--surface3); color:var(--teal);
+    font-family:'JetBrains Mono',monospace; font-size:9.5px;
+    cursor:pointer; text-decoration:none; transition:all 0.2s; font-weight:500;
   }
-  .btn-search:hover { border-color: rgba(45,212,191,0.35); background: rgba(45,212,191,0.06); }
+  .btn-search:hover { border-color:rgba(45,212,191,0.4); background:rgba(45,212,191,0.07); }
+  .mc-hdr-right { display:flex; align-items:flex-start; gap:6px; flex-shrink:0; }
 
-  /* ── SCHEDULE ── */
-  .schedule-box { background: var(--surface2); border: 1px solid var(--border); border-left: 2px solid var(--gold); border-radius: 14px; padding: 14px 16px; }
-  .sched-hdr { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; text-transform: uppercase; letter-spacing: 1.8px; color: var(--gold); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-  .sched-hdr::after { content: ''; flex: 1; height: 1px; background: rgba(245,166,35,0.15); }
-  .sched-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  @media(max-width:500px){ .sched-grid { grid-template-columns: 1fr; } }
-  .sched-slot { background: var(--surface3); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
-  .slot-time { font-family: 'JetBrains Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-faint); margin-bottom: 6px; }
-  .slot-meds { display: flex; flex-direction: column; gap: 4px; }
-  .slot-med { font-size: 12px; color: var(--text-dim); display: flex; align-items: baseline; gap: 6px; }
-  .slot-dose { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: var(--gold); flex-shrink: 0; font-weight: 600; }
+  /* description band */
+  .mc-desc-band {
+    margin: 0 18px 0 20px; padding: 10px 12px;
+    background:rgba(255,255,255,0.025); border-radius:10px;
+    border:1px solid rgba(255,255,255,0.05);
+    font-size:12.5px; color:var(--text-dim); line-height:1.6;
+  }
 
-  /* ── TRANSLATE ── */
-  .translate-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  /* detail grid */
+  .mc-detail-grid {
+    display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
+    margin:12px 18px 0 20px;
+    background:var(--border); border-radius:12px; overflow:hidden;
+  }
+  .mc-detail-cell {
+    padding:10px 12px; background:var(--surface3);
+    display:flex; flex-direction:column; gap:3px;
+  }
+  .mc-detail-cell.span2 { grid-column:span 2; }
+  .mc-detail-cell.span3 { grid-column:span 3; }
+  .mc-det-key {
+    font-family:'JetBrains Mono',monospace; font-size:8.5px;
+    text-transform:uppercase; letter-spacing:1.2px; color:var(--text-faint);
+  }
+  .mc-det-val { font-size:12.5px; color:var(--text); font-weight:600; line-height:1.3; }
+
+  /* instructions strip */
+  .mc-instructions-strip {
+    margin:10px 18px 0 20px; padding:9px 12px; border-radius:10px;
+    background:rgba(108,99,255,0.06); border:1px solid rgba(108,99,255,0.15);
+  }
+  .mc-instr-lbl {
+    font-family:'JetBrains Mono',monospace; font-size:8.5px;
+    text-transform:uppercase; letter-spacing:1px; color:var(--accent2);
+    margin-bottom:3px;
+  }
+  .mc-instr-txt { font-size:12.5px; color:var(--text-dim); line-height:1.5; }
+
+  /* confidence bar */
+  .mc-conf {
+    display:flex; align-items:center; gap:10px;
+    padding:12px 18px 16px 20px;
+  }
+  .mc-conf-lbl { font-family:'JetBrains Mono',monospace; font-size:8.5px; text-transform:uppercase; letter-spacing:1px; color:var(--text-faint); white-space:nowrap; }
+  .mc-conf-track { flex:1; height:3px; background:rgba(255,255,255,0.06); border-radius:99px; overflow:hidden; }
+  .mc-conf-fill { height:100%; border-radius:99px; transition:width 0.9s cubic-bezier(0.16,1,0.3,1); }
+  .mc-conf-pct { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--text-faint); min-width:30px; text-align:right; }
+
+  /* ── RIGHT SIDEBAR ── */
+  .res-sidebar { display:flex; flex-direction:column; gap:14px; }
+
+  /* generic sidebar card */
+  .sb-card {
+    background:var(--surface2); border:1px solid var(--border); border-radius:16px; overflow:hidden;
+  }
+  .sb-card-hdr {
+    padding:11px 16px;
+    display:flex; align-items:center; gap:8px;
+    border-bottom:1px solid var(--border);
+  }
+  .sb-card-hdr-icon { font-size:13px; }
+  .sb-card-hdr-title {
+    font-family:'JetBrains Mono',monospace; font-size:9.5px;
+    text-transform:uppercase; letter-spacing:2px;
+  }
+  .sb-card-body { padding:14px 16px; display:flex; flex-direction:column; gap:10px; }
+
+  /* patient info */
+  .sb-card.sb-patient .sb-card-hdr { background:rgba(45,212,191,0.04); }
+  .sb-card.sb-patient .sb-card-hdr-title { color:var(--teal); }
+  .sb-field { display:flex; flex-direction:column; gap:2px; }
+  .sb-field-key { font-family:'JetBrains Mono',monospace; font-size:8.5px; text-transform:uppercase; letter-spacing:1px; color:var(--text-faint); }
+  .sb-field-val { font-size:13.5px; color:var(--text); font-weight:600; }
+
+  /* notes */
+  .sb-card.sb-notes { border-left:3px solid var(--accent); }
+  .sb-card.sb-notes .sb-card-hdr { background:rgba(108,99,255,0.04); }
+  .sb-card.sb-notes .sb-card-hdr-title { color:var(--accent2); }
+  .sb-notes-txt { font-size:13px; color:var(--text-dim); line-height:1.65; }
+
+  /* schedule */
+  .sb-card.sb-sched .sb-card-hdr { background:rgba(245,166,35,0.04); }
+  .sb-card.sb-sched .sb-card-hdr-title { color:var(--gold); }
+  .sb-sched-slot { padding:8px 0; border-bottom:1px solid var(--border); }
+  .sb-sched-slot:last-child { border-bottom:none; padding-bottom:0; }
+  .sb-slot-time {
+    font-family:'JetBrains Mono',monospace; font-size:9px;
+    text-transform:uppercase; letter-spacing:1.2px; color:var(--text-faint); margin-bottom:5px;
+  }
+  .sb-slot-items { display:flex; flex-direction:column; gap:3px; }
+  .sb-slot-med { display:flex; align-items:baseline; gap:7px; font-size:12px; color:var(--text-dim); }
+  .sb-slot-dose { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--gold); font-weight:600; }
+  .sb-slot-empty { font-size:11px; color:var(--text-faint); font-style:italic; }
+
+  /* tools card */
+  .sb-card.sb-tools .sb-card-hdr { background:rgba(255,255,255,0.02); }
+  .sb-card.sb-tools .sb-card-hdr-title { color:var(--text-faint); }
+
+  /* interaction box */
+  .int-box {
+    background:rgba(248,113,113,0.05); border:1px solid rgba(248,113,113,0.2);
+    border-left:3px solid var(--red); border-radius:12px; padding:12px 14px;
+  }
+  .int-hdr { font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:1.8px; color:var(--red); margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+  .int-hdr::after { content:''; flex:1; height:1px; background:rgba(248,113,113,0.15); }
+  .int-item { padding:8px 10px; border-radius:8px; background:rgba(248,113,113,0.06); border:1px solid rgba(248,113,113,0.12); margin-bottom:6px; font-size:11.5px; color:rgba(255,180,180,0.85); line-height:1.5; }
+  .int-item:last-child { margin-bottom:0; }
+  .int-pair { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--red); margin-bottom:3px; font-weight:600; }
+  .int-safe { font-size:12px; color:var(--teal); display:flex; align-items:center; gap:6px; font-weight:500; }
+
+  /* translate */
+  .translate-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
   .lang-select {
-    padding: 8px 12px; border: 1px solid var(--border2); border-radius: 10px;
-    background: var(--surface2); color: var(--text);
-    font-family: 'JetBrains Mono', monospace; font-size: 12px; outline: none; cursor: pointer;
+    flex:1; padding:8px 12px; border:1px solid var(--border2); border-radius:10px;
+    background:var(--surface3); color:var(--text);
+    font-family:'JetBrains Mono',monospace; font-size:11.5px; outline:none; cursor:pointer;
   }
-  .lang-select option { background: var(--surface); color: var(--text); }
-  .translated-box { background: var(--surface2); border: 1px solid var(--border); border-left: 2px solid var(--accent2); border-radius: 14px; padding: 14px 16px; }
-  .trans-hdr { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; text-transform: uppercase; letter-spacing: 1.8px; color: var(--accent2); margin-bottom: 8px; }
-  .trans-txt { font-size: 13px; color: var(--text-dim); line-height: 1.7; white-space: pre-wrap; }
+  .lang-select option { background:var(--surface); color:var(--text); }
+  .translated-box {
+    background:rgba(108,99,255,0.05); border:1px solid rgba(108,99,255,0.15);
+    border-left:3px solid var(--accent2); border-radius:12px; padding:12px 14px;
+  }
+  .trans-hdr { font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:1.8px; color:var(--accent2); margin-bottom:8px; }
+  .trans-txt { font-size:13px; color:var(--text-dim); line-height:1.7; white-space:pre-wrap; }
 
-  /* ── INTERACTIONS ── */
-  .int-box { background: rgba(248,113,113,0.05); border: 1px solid rgba(248,113,113,0.2); border-left: 2px solid var(--red); border-radius: 14px; padding: 14px 16px; }
-  .int-hdr { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; text-transform: uppercase; letter-spacing: 1.8px; color: var(--red); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-  .int-hdr::after { content: ''; flex: 1; height: 1px; background: rgba(248,113,113,0.15); }
-  .int-item { padding: 8px 10px; border-radius: 8px; background: rgba(248,113,113,0.06); border: 1px solid rgba(248,113,113,0.12); margin-bottom: 6px; font-size: 12px; color: rgba(255,180,180,0.85); line-height: 1.5; }
-  .int-item:last-child { margin-bottom: 0; }
-  .int-pair { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--red); margin-bottom: 3px; font-weight: 600; }
-  .int-safe { font-size: 12px; color: var(--teal); display: flex; align-items: center; gap: 6px; font-weight: 500; }
+  /* err + btn legacy */
+  .err-box { background:rgba(248,113,113,0.06); border:1px solid rgba(248,113,113,0.2); border-radius:12px; padding:14px 16px; display:flex; gap:9px; align-items:flex-start; font-size:13px; color:var(--red); line-height:1.5; }
+  .btn-sm { display:inline-flex; align-items:center; gap:5px; padding:5px 12px; border-radius:8px; font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:500; cursor:pointer; transition:all 0.2s; border:1px solid var(--border2); background:var(--surface3); color:var(--text-dim); }
+  .btn-sm:hover { border-color:rgba(108,99,255,0.4); color:var(--accent2); background:rgba(108,99,255,0.08); }
+  .btn-sm.copied { border-color:rgba(45,212,191,0.4); color:var(--teal); background:rgba(45,212,191,0.06); }
+  .stats-grid,.stat-tile,.stat-ico,.stat-val,.stat-lbl { display:none; }
+  .sec-div { display:none; }
+  .info-box,.info-hdr,.info-row,.info-key,.info-val { display:none; }
+  .notes-box,.notes-lbl,.notes-txt { display:none; }
+  .schedule-box,.sched-hdr,.sched-grid,.sched-slot { display:none; }
+  /* old classes that may linger */
+  .res-topbar,.res-topbar-left,.res-badge-done,.res-title-main,.res-actions { display:none; }
+  .res-cols,.res-left,.res-right,.res-sec-lbl { display:none; }
+  .mc-header,.mc-header-left,.mc-index,.mc-name-tags,.mc-header-right { display:none; }
+  .mc-desc,.mc-pills,.mc-pill,.mc-pill-key,.mc-pill-val { display:none; }
+  .mc-instructions,.mc-instructions-lbl { display:none; }
+  .conf-row,.conf-lbl,.conf-track,.conf-fill,.conf-pct { display:none; }
+  .rx-info-card,.rx-info-card-hdr,.rx-info-rows,.rx-info-row,.rx-info-key,.rx-info-val,.rx-info-card-icon,.rx-info-card-title { display:none; }
+  .rx-notes-card,.rx-notes-lbl,.rx-notes-txt { display:none; }
+  .sched-card,.sched-card-hdr,.sched-card-title,.sched-slots,.sched-slot-row,.slot-time,.slot-meds,.slot-med,.slot-dose,.slot-empty { display:none; }
+  .tools-card,.tools-card-hdr,.tools-body { display:none; }
+  .res-stat-icon { display:block; }
 
-  /* ── ERR BOX ── */
-  .err-box { background: rgba(248,113,113,0.06); border: 1px solid rgba(248,113,113,0.2); border-radius: 12px; padding: 14px 16px; display: flex; gap: 9px; align-items: flex-start; font-size: 13px; color: var(--red); line-height: 1.5; }
 
   /* ══════════════════════════════════════════════════
      SCAN OVERLAY — VAIDYADRISHTI NEXUS SCAN
@@ -1098,150 +1290,261 @@ export default function PrescriptionScanner() {
 
           {/* RESULTS PHASE */}
           {phase === "results" && (
-            <div className="card card-enter">
-              <div className="card-hdr">
-                <span className="card-lbl">Analysis Results</span>
-                <span className="card-tag">Step 03 — Complete</span>
-              </div>
-              <div className="card-body">
-                {error ? (
-                  <div className="err-box"><span>⚠️</span><span>{error}</span></div>
-                ) : result && (
-                  <>
-                    {/* ACTIONS */}
-                    <div style={{display:"flex",gap:"8px",flexWrap:"wrap"}}>
-                      <button className="btn-action" onClick={exportReport}>📄 Export Report</button>
-                    </div>
-
-                    {/* STATS */}
-                    <div className="stats-grid">
-                      <div className="stat-tile"><div className="stat-ico">💊</div><div className="stat-val">{medCount}</div><div className="stat-lbl">Medicines</div></div>
-                      <div className="stat-tile"><div className="stat-ico">📏</div><div className="stat-val">{(result.medications||[]).filter(m=>notNull(m.dosage)).length}</div><div className="stat-lbl">With Dosage</div></div>
-                      <div className="stat-tile"><div className="stat-ico">📝</div><div className="stat-val">{(result.medications||[]).filter(m=>notNull(m.instructions)).length}</div><div className="stat-lbl">With Notes</div></div>
-                    </div>
-
-                    {/* NOTES */}
-                    {notNull(result.generalNotes) && (
-                      <div className="notes-box">
-                        <div className="notes-lbl">General Notes</div>
-                        <div className="notes-txt">{result.generalNotes}</div>
-                      </div>
-                    )}
-
-                    {/* PATIENT INFO */}
-                    {(notNull(result.patientName) || notNull(result.doctorName) || notNull(result.date)) && (
-                      <div className="info-box">
-                        <div className="info-hdr">Prescription Info</div>
-                        {notNull(result.patientName) && <div className="info-row"><span className="info-key">Patient</span><span className="info-val">{result.patientName}</span></div>}
-                        {notNull(result.doctorName) && <div className="info-row"><span className="info-key">Doctor</span><span className="info-val">{result.doctorName}</span></div>}
-                        {notNull(result.date) && <div className="info-row"><span className="info-key">Date</span><span className="info-val">{result.date}</span></div>}
-                      </div>
-                    )}
-
-                    {/* MED CARDS */}
-                    <div className="sec-div">Medications</div>
-                    {(result.medications || []).length > 0
-                      ? (result.medications || []).map((med, i) => (
-                        <div className="med-card" key={i}>
-                          <div className="mc-top">
-                            <div className="mc-name-row">
-                              <span className="mc-name">{med.name}</span>
-                              <a className="btn-search" href={"https://www.1mg.com/search/all?name=" + encodeURIComponent(med.name)} target="_blank" rel="noopener noreferrer">🛒 1mg</a>
-                              <a className="btn-search" href={"https://www.netmeds.com/catalogsearch/result?q=" + encodeURIComponent(med.name)} target="_blank" rel="noopener noreferrer">🛒 Netmeds</a>
-                            </div>
-                            <div style={{display:"flex",alignItems:"center",gap:"6px",flexShrink:0}}>
-                              {notNull(med.dosage) && <span className="mc-badge">{med.dosage}</span>}
-                              <button className={`btn-sm${copiedId === i ? " copied" : ""}`} onClick={() => copyMed(med, i)}>{copiedId === i ? "✓ Copied" : "📋 Copy"}</button>
-                            </div>
-                          </div>
-                          {notNull(med.description) && <div className="mc-desc">ℹ {med.description}</div>}
-                          {med.confidence != null && (
-                            <div className="conf-row">
-                              <span className="conf-lbl">Confidence</span>
-                              <div className="conf-track"><div className="conf-fill" style={{width: med.confidence + "%", background: getConfColor(med.confidence)}} /></div>
-                              <span className="conf-pct">{med.confidence}%</span>
-                            </div>
-                          )}
-                          <div className="mc-div" />
-                          <div className="mc-details">
-                            {notNull(med.frequency) && <div className="mc-det"><span className="dlbl">Frequency</span><span className="dval">{med.frequency}</span></div>}
-                            {notNull(med.duration) && <div className="mc-det"><span className="dlbl">Duration</span><span className="dval">{med.duration}</span></div>}
-                            {notNull(med.quantity) && <div className="mc-det"><span className="dlbl">Quantity</span><span className="dval">{med.quantity}</span></div>}
-                            {notNull(med.instructions) && <div className="mc-det fw"><span className="dlbl">Instructions</span><span className="dval">{med.instructions}</span></div>}
-                          </div>
+            <div className="results-wrap">
+              {error ? (
+                <div className="err-box"><span>⚠️</span><span>{error}</span></div>
+              ) : result && (
+                <>
+                  {/* ══ HERO BANNER ══ */}
+                  <div className="res-hero">
+                    <div className="res-hero-top">
+                      <div className="res-hero-title-group">
+                        <div className="res-hero-icon">📋</div>
+                        <div>
+                          <div className="res-hero-title">Prescription Analysis</div>
+                          <div className="res-hero-sub">VAIDYADRISHTI AI · GROQ VISION</div>
                         </div>
-                      ))
-                      : <div className="err-box"><span>⚠️</span><span>No medications could be extracted.</span></div>
-                    }
+                      </div>
+                      <div className="res-hero-badges">
+                        <div className="res-pill-done"><div className="res-pill-dot"/>Scan Complete</div>
+                        <div className="res-pill-model">Llama 4 Scout</div>
+                      </div>
+                    </div>
 
-                    {/* DAILY SCHEDULE */}
-                    {(result.medications||[]).length > 0 && (
-                      <div className="schedule-box">
-                        <div className="sched-hdr">🕐 Daily Schedule</div>
-                        <div className="sched-grid">
-                          {Object.entries(buildSchedule(result.medications)).map(([slot, meds]) => (
-                            <div className="sched-slot" key={slot}>
-                              <div className="slot-time">{slot === "Morning" ? "🌅 Morning" : slot === "Afternoon" ? "☀️ Afternoon" : "🌙 Night"}</div>
-                              <div className="slot-meds">
-                                {meds.length === 0
-                                  ? <span style={{fontSize:"11px",color:"var(--text-faint)"}}>—</span>
-                                  : meds.map((m, i) => <div className="slot-med" key={i}><span className="slot-dose">{m.dose || "•"}</span><span>{m.name}</span></div>)
-                                }
+                    {/* stat tiles */}
+                    <div className="res-stats">
+                      <div className="res-stat">
+                        <div className="res-stat-icon">💊</div>
+                        <div className="res-stat-num">{medCount}</div>
+                        <div className="res-stat-lbl">Medications</div>
+                      </div>
+                      <div className="res-stat">
+                        <div className="res-stat-icon">📏</div>
+                        <div className="res-stat-num">{(result.medications||[]).filter(m=>notNull(m.dosage)).length}</div>
+                        <div className="res-stat-lbl">With Dosage</div>
+                      </div>
+                      <div className="res-stat">
+                        <div className="res-stat-icon">🗓️</div>
+                        <div className="res-stat-num">{(result.medications||[]).filter(m=>notNull(m.frequency)).length}</div>
+                        <div className="res-stat-lbl">Scheduled</div>
+                      </div>
+                      <div className="res-stat">
+                        <div className="res-stat-icon">🎯</div>
+                        <div className="res-stat-num">{Math.round((result.medications||[]).reduce((s,m)=>s+(m.confidence||0),0)/Math.max(medCount,1))}%</div>
+                        <div className="res-stat-lbl">Avg Confidence</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* action bar */}
+                  <div className="res-actions-bar">
+                    <button className="btn-action" onClick={exportReport}>📄 Export Report</button>
+                    <button className="btn-rescan" style={{width:"auto",marginTop:0}} onClick={resetAll}>↩ New Scan</button>
+                  </div>
+
+                  {/* ══ BODY ══ */}
+                  <div className="res-body">
+
+                    {/* LEFT — medications */}
+                    <div className="res-med-col">
+                      <div className="res-col-hdr">
+                        💊 Medications
+                        <span className="res-col-count">{medCount} found</span>
+                      </div>
+
+                      {(result.medications||[]).length > 0
+                        ? (result.medications||[]).map((med, i) => (
+                          <div className="med-card" key={i}>
+                            <div className="med-card-strip" />
+
+                            {/* header */}
+                            <div className="mc-hdr">
+                              <div className="mc-hdr-left">
+                                <div className="mc-num">Rx — {String(i+1).padStart(2,"0")}</div>
+                                <div className="mc-name">{med.name}</div>
+                                <div className="mc-tags">
+                                  {notNull(med.dosage) && <span className="mc-dose-badge">{med.dosage}</span>}
+                                  <a className="btn-search" href={"https://www.1mg.com/search/all?name="+encodeURIComponent(med.name)} target="_blank" rel="noopener noreferrer">🛒 1mg</a>
+                                  <a className="btn-search" href={"https://www.netmeds.com/catalogsearch/result?q="+encodeURIComponent(med.name)} target="_blank" rel="noopener noreferrer">🛒 Netmeds</a>
+                                </div>
+                              </div>
+                              <div className="mc-hdr-right">
+                                <button className={`btn-sm${copiedId===i?" copied":""}`} onClick={()=>copyMed(med,i)}>{copiedId===i?"✓ Copied":"📋 Copy"}</button>
                               </div>
                             </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
 
-                    {/* DRUG INTERACTIONS */}
-                    {(result.medications||[]).length >= 2 && (
-                      <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
-                        <button className="btn-danger" onClick={checkInteractions} disabled={checking}>
-                          {checking ? "⏳ Checking..." : "⚠️ Check Drug Interactions"}
-                        </button>
-                        {interactions && (
-                          <div className="int-box">
-                            <div className="int-hdr">⚠️ Drug Interactions</div>
-                            {interactions.safe && interactions.interactions.length === 0
-                              ? <div className="int-safe">✅ No known interactions found.</div>
-                              : (interactions.interactions || []).map((ix, i) => (
-                                <div className="int-item" key={i}>
-                                  <div className="int-pair">{ix.drug1} ↔ {ix.drug2} · {ix.severity || "moderate"}</div>
-                                  <div>{ix.description}</div>
+                            {/* description */}
+                            {notNull(med.description) && (
+                              <div className="mc-desc-band">{med.description}</div>
+                            )}
+
+                            {/* detail grid */}
+                            {(notNull(med.frequency)||notNull(med.duration)||notNull(med.quantity)) && (
+                              <div className="mc-detail-grid">
+                                {notNull(med.frequency) && (
+                                  <div className={`mc-detail-cell${!notNull(med.duration)&&!notNull(med.quantity)?" span3":!notNull(med.duration)||!notNull(med.quantity)?" span2":""}`}>
+                                    <div className="mc-det-key">Frequency</div>
+                                    <div className="mc-det-val">{med.frequency}</div>
+                                  </div>
+                                )}
+                                {notNull(med.duration) && (
+                                  <div className="mc-detail-cell">
+                                    <div className="mc-det-key">Duration</div>
+                                    <div className="mc-det-val">{med.duration}</div>
+                                  </div>
+                                )}
+                                {notNull(med.quantity) && (
+                                  <div className="mc-detail-cell">
+                                    <div className="mc-det-key">Quantity</div>
+                                    <div className="mc-det-val">{med.quantity}</div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                            {/* instructions */}
+                            {notNull(med.instructions) && (
+                              <div className="mc-instructions-strip">
+                                <div className="mc-instr-lbl">⚠ Special Instructions</div>
+                                <div className="mc-instr-txt">{med.instructions}</div>
+                              </div>
+                            )}
+
+                            {/* confidence */}
+                            {med.confidence != null && (
+                              <div className="mc-conf">
+                                <span className="mc-conf-lbl">AI Confidence</span>
+                                <div className="mc-conf-track">
+                                  <div className="mc-conf-fill" style={{width:med.confidence+"%",background:getConfColor(med.confidence)}}/>
                                 </div>
-                              ))
-                            }
+                                <span className="mc-conf-pct">{med.confidence}%</span>
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    )}
+                        ))
+                        : <div className="err-box"><span>⚠️</span><span>No medications could be extracted.</span></div>
+                      }
+                    </div>
 
-                    {/* TRANSLATE */}
-                    <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
-                      <div className="translate-row">
-                        <select className="lang-select" value={lang} onChange={e => { setLang(e.target.value); setTranslated(null); }}>
-                          <option value="te">Telugu</option>
-                          <option value="hi">Hindi</option>
-                          <option value="ta">Tamil</option>
-                          <option value="bn">Bengali</option>
-                          <option value="mr">Marathi</option>
-                        </select>
-                        <button className="btn-action" onClick={translateResult} disabled={translating}>
-                          {translating ? "⏳ Translating..." : "🌐 Translate"}
-                        </button>
-                      </div>
-                      {translated && (
-                        <div className="translated-box">
-                          <div className="trans-hdr">🌐 Translated Summary</div>
-                          <div className="trans-txt">{translated}</div>
+                    {/* RIGHT — sidebar */}
+                    <div className="res-sidebar">
+
+                      {/* Patient info */}
+                      {(notNull(result.patientName)||notNull(result.doctorName)||notNull(result.date)) && (
+                        <div className="sb-card sb-patient">
+                          <div className="sb-card-hdr">
+                            <span className="sb-card-hdr-icon">🏥</span>
+                            <span className="sb-card-hdr-title">Prescription Info</span>
+                          </div>
+                          <div className="sb-card-body">
+                            {notNull(result.patientName) && <div className="sb-field"><div className="sb-field-key">Patient</div><div className="sb-field-val">{result.patientName}</div></div>}
+                            {notNull(result.doctorName)  && <div className="sb-field"><div className="sb-field-key">Doctor</div><div className="sb-field-val">{result.doctorName}</div></div>}
+                            {notNull(result.date)        && <div className="sb-field"><div className="sb-field-key">Date</div><div className="sb-field-val">{result.date}</div></div>}
+                          </div>
                         </div>
                       )}
-                    </div>
-                  </>
-                )}
-                <button className="btn-rescan" onClick={resetAll}>↩ Scan Another Prescription</button>
-              </div>
+
+                      {/* Notes */}
+                      {notNull(result.generalNotes) && (
+                        <div className="sb-card sb-notes">
+                          <div className="sb-card-hdr">
+                            <span className="sb-card-hdr-icon">📝</span>
+                            <span className="sb-card-hdr-title">General Notes</span>
+                          </div>
+                          <div className="sb-card-body">
+                            <div className="sb-notes-txt">{result.generalNotes}</div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Daily schedule */}
+                      {(result.medications||[]).length > 0 && (
+                        <div className="sb-card sb-sched">
+                          <div className="sb-card-hdr">
+                            <span className="sb-card-hdr-icon">🕐</span>
+                            <span className="sb-card-hdr-title">Daily Schedule</span>
+                          </div>
+                          <div className="sb-card-body" style={{gap:"0"}}>
+                            {Object.entries(buildSchedule(result.medications)).map(([slot,meds])=>(
+                              <div className="sb-sched-slot" key={slot}>
+                                <div className="sb-slot-time">{slot==="Morning"?"🌅 Morning":slot==="Afternoon"?"☀️ Afternoon":"🌙 Night"}</div>
+                                <div className="sb-slot-items">
+                                  {meds.length===0
+                                    ? <div className="sb-slot-empty">No medications</div>
+                                    : meds.map((m,i)=><div className="sb-slot-med" key={i}><span className="sb-slot-dose">{m.dose||"•"}</span>{m.name}</div>)
+                                  }
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Smart tools */}
+                      <div className="sb-card sb-tools">
+                        <div className="sb-card-hdr">
+                          <span className="sb-card-hdr-icon">🛠</span>
+                          <span className="sb-card-hdr-title">Smart Tools</span>
+                        </div>
+                        <div className="sb-card-body">
+
+                          {/* Drug interactions */}
+                          {(result.medications||[]).length >= 2 && (
+                            <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
+                              <button className="btn-danger" onClick={checkInteractions} disabled={checking} style={{width:"100%",justifyContent:"center"}}>
+                                {checking?"⏳ Checking...":"⚠️ Check Drug Interactions"}
+                              </button>
+                              {interactions && (
+                                <div className="int-box">
+                                  <div className="int-hdr">Interactions</div>
+                                  {interactions.safe && interactions.interactions.length===0
+                                    ? <div className="int-safe">✅ No interactions found.</div>
+                                    : (interactions.interactions||[]).map((ix,i)=>(
+                                        <div className="int-item" key={i}>
+                                          <div className="int-pair">{ix.drug1} ↔ {ix.drug2} · {ix.severity||"moderate"}</div>
+                                          {ix.description}
+                                        </div>
+                                      ))
+                                  }
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Translate */}
+                          <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
+                            <div className="translate-row">
+                              <select className="lang-select" value={lang} onChange={e=>{setLang(e.target.value);setTranslated(null);}}>
+                                <option value="te">Telugu</option>
+                                <option value="hi">Hindi</option>
+                                <option value="ta">Tamil</option>
+                                <option value="bn">Bengali</option>
+                                <option value="mr">Marathi</option>
+                              </select>
+                              <button className="btn-action" onClick={translateResult} disabled={translating}>
+                                {translating?"⏳...":"🌐 Translate"}
+                              </button>
+                            </div>
+                            {translated && (
+                              <div className="translated-box">
+                                <div className="trans-hdr">Translation</div>
+                                <div className="trans-txt">{translated}</div>
+                              </div>
+                            )}
+                          </div>
+
+                        </div>
+                      </div>
+
+                    </div>{/* end sidebar */}
+                  </div>{/* end res-body */}
+
+                  {/* bottom rescan */}
+                  <div style={{paddingTop:"8px"}}>
+                    <button className="btn-rescan" onClick={resetAll}>↩ Scan Another Prescription</button>
+                  </div>
+                </>
+              )}
             </div>
           )}
         </div>
