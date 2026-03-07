@@ -121,6 +121,56 @@ const styles = `
     padding-bottom: 80px;
   }
 
+  /* ── FOOTER ── */
+  .app-footer {
+    position: relative; z-index: 5;
+    padding: 24px clamp(12px, 4vw, 48px) 28px;
+    border-top: 1px solid var(--border);
+    background: rgba(8,11,20,0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    margin-top: 40px;
+  }
+  .footer-inner {
+    max-width: 860px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .footer-left { display: flex; align-items: center; gap: 10px; }
+  .footer-logo {
+    width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--accent), #4f46e5);
+    display: flex; align-items: center; justify-content: center; font-size: 14px;
+  }
+  .footer-brand {
+    font-family: 'Playfair Display', serif; font-size: 13px;
+    font-weight: 700; color: var(--text);
+  }
+  .footer-brand span { color: var(--gold); font-style: italic; }
+  .footer-copy {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--text-faint); letter-spacing: 0.5px;
+  }
+  .footer-right { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .footer-tag {
+    display: flex; align-items: center; gap: 5px;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: var(--text-faint); letter-spacing: 0.5px;
+  }
+  .footer-tag-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+  .footer-divider { width: 1px; height: 12px; background: var(--border2); }
+  .footer-disclaimer {
+    width: 100%; padding-top: 14px;
+    border-top: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace; font-size: 9px;
+    color: var(--text-faint); text-align: center; line-height: 1.7;
+    letter-spacing: 0.3px; margin-top: 14px;
+  }
+  @media(max-width:600px){
+    .footer-inner { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .footer-disclaimer { text-align: left; }
+  }
+
   /* ── CARDS ── */
   .card {
     background: var(--surface);
@@ -1964,6 +2014,38 @@ export default function PrescriptionScanner() {
             </div>
           </div>
         )}
+      {/* ── FOOTER ── */}
+      <footer className="app-footer">
+        <div className="footer-inner">
+          <div className="footer-left">
+            <div className="footer-logo">👁</div>
+            <div>
+              <div className="footer-brand">VaidyaDrishti <span>AI</span></div>
+              <div className="footer-copy">वैद्यदृष्टि · Prescription Vision</div>
+            </div>
+          </div>
+          <div className="footer-right">
+            <div className="footer-tag">
+              <div className="footer-tag-dot" style={{background:"var(--teal)"}}/>
+              Groq Vision
+            </div>
+            <div className="footer-divider"/>
+            <div className="footer-tag">
+              <div className="footer-tag-dot" style={{background:"var(--accent2)"}}/>
+              Llama 4 Scout
+            </div>
+            <div className="footer-divider"/>
+            <div className="footer-tag">
+              <div className="footer-tag-dot" style={{background:"var(--gold)"}}/>
+              React + Vite
+            </div>
+          </div>
+        </div>
+        <div className="footer-disclaimer">
+          © {new Date().getFullYear()} VaidyaDrishti AI · For informational use only · Not a substitute for professional medical advice · Always consult your doctor or pharmacist
+        </div>
+      </footer>
+
       </div>
     </>
   );
