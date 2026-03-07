@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap');
@@ -126,6 +126,28 @@ const styles = `
   .btn-rescan{display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 20px;border:1px solid rgba(6,182,212,0.25);border-radius:12px;background:var(--cyan-soft);color:var(--cyan);font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;margin-top:4px;}
   .btn-rescan:hover{background:rgba(6,182,212,0.18);}
   .count-pill{font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 10px;margin-left:auto;background:linear-gradient(135deg,rgba(6,182,212,0.14),rgba(59,130,246,0.09));border:1px solid rgba(6,182,212,0.22);border-radius:99px;color:var(--cyan);}
+
+  /* ── COPY BUTTON ── */
+  .btn-copy{position:absolute;top:10px;right:10px;padding:4px 10px;border:1px solid rgba(6,182,212,0.25);border-radius:8px;background:rgba(6,182,212,0.08);color:var(--cyan);font-family:'JetBrains Mono',monospace;font-size:10px;cursor:pointer;transition:all 0.2s;z-index:2;}
+  .btn-copy:hover{background:rgba(6,182,212,0.18);}
+  .btn-copy.copied{background:rgba(16,185,129,0.15);border-color:rgba(16,185,129,0.35);color:var(--emerald);}
+  /* ── PDF / HISTORY BUTTONS ── */
+  .btn-pdf{display:flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid rgba(6,182,212,0.25);border-radius:10px;background:rgba(6,182,212,0.08);color:var(--cyan);font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+  .btn-pdf:hover{background:rgba(6,182,212,0.18);}
+  .results-actions{display:flex;gap:8px;margin-bottom:4px;}
+  /* ── HISTORY PANEL ── */
+  .history-section{margin-top:8px;}
+  .history-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .history-title{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--text-faint);}
+  .btn-clear-history{font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 8px;border:1px solid rgba(239,68,68,0.2);border-radius:6px;background:transparent;color:rgba(239,68,68,0.5);cursor:pointer;transition:all 0.2s;}
+  .btn-clear-history:hover{background:rgba(239,68,68,0.08);color:rgba(239,68,68,0.8);}
+  .history-list{display:flex;flex-direction:column;gap:8px;}
+  .history-item{padding:12px 14px;border-radius:12px;background:var(--glass);border:1px solid var(--glass-border);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .history-item:hover{border-color:rgba(6,182,212,0.3);background:rgba(6,182,212,0.05);}
+  .history-info{display:flex;flex-direction:column;gap:3px;}
+  .history-patient{font-size:13px;font-weight:600;color:var(--text);}
+  .history-meta{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-faint);}
+  .history-badge{font-family:'JetBrains Mono',monospace;font-size:10px;padding:2px 8px;background:var(--cyan-soft);border:1px solid rgba(6,182,212,0.2);border-radius:99px;color:var(--cyan);white-space:nowrap;}
 `;
 
 const SCAN_STEPS = [
@@ -150,6 +172,8 @@ export default function PrescriptionScanner() {
   const [doneScanSteps, setDoneScanSteps] = useState([]);
   const [overlayExiting, setOverlayExiting] = useState(false);
   const [uploadExiting, setUploadExiting] = useState(false);
+  const [history, setHistory] = useState(() => { try { return JSON.parse(localStorage.getItem("rxscanner_history") || "[]"); } catch(e) { return []; } });
+  const [copiedId, setCopiedId] = useState(null);
 
   const handleFile = useCallback((file) => {
     if (!file || !file.type.startsWith("image/")) return;
@@ -224,7 +248,7 @@ export default function PrescriptionScanner() {
     await new Promise(r => setTimeout(r, 700));
     setOverlayExiting(true);
     await new Promise(r => setTimeout(r, 600));
-    if (apiError) setError(apiError); else setResult(parsed);
+    if (apiError) { setError(apiError); } else { setResult(parsed); saveToHistory(parsed); }
     setPhase("results"); setOverlayExiting(false);
   };
 
@@ -232,6 +256,65 @@ export default function PrescriptionScanner() {
     setPhase("upload"); setImage(null); setImageBase64(null);
     setResult(null); setError(null); setScanProgress(0);
     setActiveScanStep(0); setDoneScanSteps([]); setUploadExiting(false);
+  };
+
+  const saveToHistory = (data) => {
+    const entry = {
+      id: Date.now(),
+      scannedAt: new Date().toLocaleString(),
+      patientName: data.patientName || "Unknown Patient",
+      doctorName: data.doctorName || "Unknown Doctor",
+      date: data.date || "",
+      medCount: data.medications?.length || 0,
+      data: data,
+    };
+    const updated = [entry, ...history].slice(0, 20);
+    setHistory(updated);
+    localStorage.setItem("rxscanner_history", JSON.stringify(updated));
+  };
+
+  const copyMed = (med, id) => {
+    const text = [
+      "Medicine: " + med.name,
+      med.dosage ? "Dosage: " + med.dosage : "",
+      med.frequency ? "Frequency: " + med.frequency : "",
+      med.duration ? "Duration: " + med.duration : "",
+      med.instructions ? "Instructions: " + med.instructions : "",
+    ].filter(Boolean).join("\n");
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 2000);
+    });
+  };
+
+  const exportPDF = () => {
+    if (!result) return;
+    const lines = [];
+    lines.push("RXSCANNER — PRESCRIPTION REPORT");
+    lines.push("================================");
+    if (notNull(result.patientName)) lines.push("Patient: " + result.patientName);
+    if (notNull(result.doctorName))  lines.push("Doctor:  " + result.doctorName);
+    if (notNull(result.date))        lines.push("Date:    " + result.date);
+    if (notNull(result.generalNotes)) { lines.push(""); lines.push("Notes: " + result.generalNotes); }
+    lines.push("");
+    lines.push("MEDICATIONS");
+    lines.push("-----------");
+    (result.medications || []).forEach((med, i) => {
+      lines.push("");
+      lines.push((i + 1) + ". " + med.name + (notNull(med.dosage) ? "  [" + med.dosage + "]" : ""));
+      if (notNull(med.description))   lines.push("   About:        " + med.description);
+      if (notNull(med.frequency))     lines.push("   Frequency:    " + med.frequency);
+      if (notNull(med.duration))      lines.push("   Duration:     " + med.duration);
+      if (notNull(med.quantity))      lines.push("   Quantity:     " + med.quantity);
+      if (notNull(med.instructions))  lines.push("   Instructions: " + med.instructions);
+    });
+    lines.push("");
+    lines.push("Generated by RxScanner — " + new Date().toLocaleString());
+    const blob = new Blob([lines.join("\n")], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "prescription_" + Date.now() + ".txt";
+    a.click(); URL.revokeObjectURL(url);
   };
 
   const medCount = result?.medications?.length || 0;
@@ -292,6 +375,25 @@ export default function PrescriptionScanner() {
                     <div className="preview-lbl">✓  Image loaded — ready to scan</div>
                   </div>
                 )}
+                {history.length > 0 && (
+                  <div className="history-section">
+                    <div className="history-hdr">
+                      <span className="history-title">Recent Scans</span>
+                      <button className="btn-clear-history" onClick={() => { setHistory([]); localStorage.removeItem("rxscanner_history"); }}>Clear</button>
+                    </div>
+                    <div className="history-list">
+                      {history.slice(0, 5).map(h => (
+                        <div className="history-item" key={h.id} onClick={() => { setResult(h.data); setPhase("results"); }}>
+                          <div className="history-info">
+                            <div className="history-patient">{h.patientName}</div>
+                            <div className="history-meta">{h.doctorName} · {h.scannedAt}</div>
+                          </div>
+                          <span className="history-badge">{h.medCount} meds</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <div style={{display:"flex",flexDirection:"column",gap:"6px"}}>
                   <label style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"9.5px",textTransform:"uppercase",letterSpacing:"1.8px",color:"rgba(240,249,255,0.28)"}}>Groq API Key</label>
                   <input type="password" placeholder="gsk_..." value={apiKey} onChange={e => setApiKey(e.target.value)}
@@ -316,6 +418,9 @@ export default function PrescriptionScanner() {
                 {error && <div className="err-box"><span>⚠️</span><span>{error}</span></div>}
                 {result && (
                   <>
+                    <div className="results-actions">
+                      <button className="btn-pdf" onClick={exportPDF}>📄 Export Report</button>
+                    </div>
                     <div className="stats-grid">
                       {[
                         { icon:"💊", val:medCount, lbl:"Medications" },
@@ -355,6 +460,7 @@ export default function PrescriptionScanner() {
                             <div className="mc-name">{med.name}</div>
                             {notNull(med.dosage) && <div className="mc-badge">{med.dosage}</div>}
                           </div>
+                          <button className={"btn-copy" + (copiedId === i ? " copied" : "")} onClick={() => copyMed(med, i)}>{copiedId === i ? "✓ Copied" : "📋 Copy"}</button>
                           {notNull(med.description) && (
                             <div className="mc-desc">
                               <span className="mc-desc-i">ℹ</span>
