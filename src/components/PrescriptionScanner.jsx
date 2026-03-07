@@ -287,7 +287,6 @@ const styles = `
   .med-card{
     background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;
     overflow:hidden;position:relative;
-    animation:slideIn 0.45s ease both;
     transition:border-color 0.3s,box-shadow 0.3s,transform 0.2s;
   }
   .med-card:hover{border-color:rgba(6,182,212,0.18);box-shadow:0 8px 28px rgba(0,0,0,0.18);transform:translateY(-1px);}
@@ -670,7 +669,7 @@ export default function PrescriptionScanner() {
 
                     {result.medications?.length > 0
                       ? result.medications.map((med, i) => (
-                        <div className="med-card" key={i} style={{animationDelay:`${300 + i*70}ms`}}>
+                        <div className="med-card" key={i}>
                           <div className="mc-top">
                             <div className="mc-name">{med.name}</div>
                             {med.dosage && med.dosage !== 'null' && <div className="mc-badge">{med.dosage}</div>}
