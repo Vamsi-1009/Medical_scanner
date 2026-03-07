@@ -20,16 +20,7 @@ const styles = `
 
   body { background: var(--bg); font-family: 'Outfit', sans-serif; min-height: 100vh; overflow-x: hidden; }
 
-  .app {
-    min-height: 100vh;
-    background:
-      radial-gradient(ellipse 80% 50% at 20% -10%, rgba(6,182,212,0.1) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 40% at 80% 110%, rgba(59,130,246,0.08) 0%, transparent 55%),
-      #030712;
-    color: var(--text);
-    padding-bottom: 80px;
-    position: relative;
-  }
+  .app { min-height: 100vh; background: radial-gradient(ellipse 80% 50% at 20% -10%, rgba(6,182,212,0.1) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 80% 110%, rgba(59,130,246,0.08) 0%, transparent 55%), #030712; color: var(--text); padding-bottom: 80px; position: relative; }
 
   .orb { position: fixed; pointer-events: none; z-index: 0; border-radius: 50%; }
   .orb1 { width:600px;height:600px;background:radial-gradient(circle,rgba(6,182,212,0.05) 0%,transparent 70%);top:-200px;left:-100px;animation:floatOrb 20s ease-in-out infinite; }
@@ -142,9 +133,7 @@ const styles = `
   @media(max-width:600px){.stats-grid{grid-template-columns:1fr 1fr;}}
   .stat-tile{ padding:14px 16px;border-radius:14px;background:linear-gradient(135deg,rgba(6,182,212,0.06),rgba(59,130,246,0.04));border:1px solid rgba(6,182,212,0.12);display:flex;flex-direction:column;gap:4px;animation:tileIn 0.4s ease both; }
   @keyframes tileIn{from{opacity:0;transform:scale(0.95);}to{opacity:1;transform:scale(1);}}
-  .st-icon{font-size:18px;}
-  .st-val{font-family:'Instrument Serif',serif;font-size:26px;color:var(--text);line-height:1;}
-  .st-lbl{font-size:11px;color:var(--text-faint);}
+  .st-icon{font-size:18px;} .st-val{font-family:'Instrument Serif',serif;font-size:26px;color:var(--text);line-height:1;} .st-lbl{font-size:11px;color:var(--text-faint);}
 
   .info-box{ background:linear-gradient(135deg,rgba(6,182,212,0.05),rgba(59,130,246,0.03));border:1px solid rgba(6,182,212,0.14);border-radius:14px;padding:14px 16px;animation:slideIn 0.4s ease both; }
   .ibox-hdr{font-family:'JetBrains Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:1.8px;color:var(--cyan);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
@@ -168,21 +157,17 @@ const styles = `
   .mc-desc-i{font-size:11px;margin-top:2px;flex-shrink:0;opacity:0.7;font-style:normal;}
   .mc-div{margin:11px 16px 0 19px;height:1px;background:rgba(255,255,255,0.06);}
   .mc-details{padding:9px 16px 14px 19px;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-  .mc-det{display:flex;flex-direction:column;gap:2px;}
-  .mc-det.fw{grid-column:1/-1;}
+  .mc-det{display:flex;flex-direction:column;gap:2px;} .mc-det.fw{grid-column:1/-1;}
   .dlbl{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-faint);}
   .dval{font-size:12.5px;color:var(--text-dim);font-weight:500;line-height:1.4;}
 
   .notes-box{background:linear-gradient(135deg,rgba(16,185,129,0.05),rgba(6,182,212,0.02));border:1px solid rgba(16,185,129,0.14);border-radius:14px;padding:14px 16px;}
   .nlbl{font-family:'JetBrains Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:1.8px;color:var(--emerald);margin-bottom:7px;}
   .ntxt{font-size:13px;color:var(--text-dim);line-height:1.6;}
-
   .err-box{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:13px;padding:14px 16px;display:flex;gap:9px;align-items:flex-start;font-size:13px;color:rgba(252,165,165,0.88);line-height:1.5;}
-
   .btn-rescan{ display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 20px;border:1px solid rgba(6,182,212,0.25);border-radius:12px;background:var(--cyan-soft);color:var(--cyan);font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;margin-top:4px; }
   .btn-rescan:hover{background:rgba(6,182,212,0.18);box-shadow:0 4px 16px rgba(6,182,212,0.15);}
   .count-pill{font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 10px;margin-left:auto;background:linear-gradient(135deg,rgba(6,182,212,0.14),rgba(59,130,246,0.09));border:1px solid rgba(6,182,212,0.22);border-radius:99px;color:var(--cyan);}
-
   @keyframes slideIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
 `;
 
@@ -225,13 +210,8 @@ export default function PrescriptionScanner() {
     const delays = [0, 800, 1800, 2800];
     const durations = [700, 900, 900, 600];
     delays.forEach((delay, i) => {
-      setTimeout(() => {
-        setActiveScanStep(i);
-        setScanProgress(Math.round(((i + 1) / SCAN_STEPS.length) * 85));
-      }, delay);
-      setTimeout(() => {
-        setDoneScanSteps(prev => [...prev, i]);
-      }, delay + durations[i]);
+      setTimeout(() => { setActiveScanStep(i); setScanProgress(Math.round(((i + 1) / SCAN_STEPS.length) * 85)); }, delay);
+      setTimeout(() => { setDoneScanSteps(prev => [...prev, i]); }, delay + durations[i]);
     });
   }, []);
 
@@ -239,8 +219,7 @@ export default function PrescriptionScanner() {
     if (!imageBase64) return;
     setUploadExiting(true);
     await new Promise(r => setTimeout(r, 450));
-    setPhase("scanning");
-    setScanProgress(0); setActiveScanStep(0); setDoneScanSteps([]);
+    setPhase("scanning"); setScanProgress(0); setActiveScanStep(0); setDoneScanSteps([]);
     const scanStart = Date.now();
     animateScanSteps();
 
@@ -278,7 +257,7 @@ Return ONLY a JSON object (no markdown, no backticks):
   }],
   "generalNotes": "any other notes or null"
 }
-Extract every medication. Use null for missing fields. Be precise and faithful.`
+Extract every medication. For missing fields use JSON null (not the string "null"). Only include fields that are clearly visible in the prescription. Be precise and faithful.`
               }
             ]
           }]
@@ -318,14 +297,10 @@ Extract every medication. Use null for missing fields. Be precise and faithful.`
       <style>{styles}</style>
       <div className="app">
         <div className="orb orb1" /><div className="orb orb2" />
-
         <header className="header">
           <div className="header-left">
             <div className="logo">⚕️</div>
-            <div className="brand">
-              <h1>RxScanner</h1>
-              <p>AI-powered medical prescription reader</p>
-            </div>
+            <div className="brand"><h1>RxScanner</h1><p>AI-powered medical prescription reader</p></div>
           </div>
           <div className="header-badge"><div className="pulse-dot" />Groq Vision API</div>
         </header>
@@ -370,31 +345,15 @@ Extract every medication. Use null for missing fields. Be precise and faithful.`
                     <div className="preview-lbl">✓ &nbsp;Image loaded — ready to scan</div>
                   </div>
                 )}
-
                 <div style={{display:"flex",flexDirection:"column",gap:"6px"}}>
-                  <label style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"9.5px",textTransform:"uppercase",letterSpacing:"1.8px",color:"rgba(240,249,255,0.28)"}}>
-                    Groq API Key
-                  </label>
-                  <input
-                    type="password"
-                    placeholder="gsk_..."
-                    value={apiKey}
-                    onChange={e => setApiKey(e.target.value)}
+                  <label style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"9.5px",textTransform:"uppercase",letterSpacing:"1.8px",color:"rgba(240,249,255,0.28)"}}>Groq API Key</label>
+                  <input type="password" placeholder="gsk_..." value={apiKey} onChange={e => setApiKey(e.target.value)}
                     style={{width:"100%",padding:"10px 14px",background:"rgba(255,255,255,0.04)",
-                      border:apiKey ? "1px solid rgba(16,185,129,0.35)" : "1px solid rgba(255,255,255,0.1)",
-                      borderRadius:"10px",color:"#f0f9ff",fontFamily:"'JetBrains Mono',monospace",
-                      fontSize:"13px",outline:"none",transition:"border-color 0.2s"}}
-                  />
-                  {!apiKey && (
-                    <p style={{fontSize:"11px",color:"rgba(239,68,68,0.7)",fontFamily:"'JetBrains Mono',monospace"}}>
-                      ⚠ Groq API key required — get one free at console.groq.com
-                    </p>
-                  )}
+                      border:apiKey?"1px solid rgba(16,185,129,0.35)":"1px solid rgba(255,255,255,0.1)",
+                      borderRadius:"10px",color:"#f0f9ff",fontFamily:"'JetBrains Mono',monospace",fontSize:"13px",outline:"none",transition:"border-color 0.2s"}} />
+                  {!apiKey && <p style={{fontSize:"11px",color:"rgba(239,68,68,0.7)",fontFamily:"'JetBrains Mono',monospace"}}>⚠ Groq API key required — get one free at console.groq.com</p>}
                 </div>
-
-                <button className="btn-scan" onClick={scanPrescription} disabled={!image || !apiKey}>
-                  <span>🔬</span> Scan Prescription
-                </button>
+                <button className="btn-scan" onClick={scanPrescription} disabled={!image || !apiKey}><span>🔬</span> Scan Prescription</button>
                 {image && <button className="btn-clear" onClick={resetAll}>Clear & upload new image</button>}
               </div>
             </div>
@@ -410,7 +369,7 @@ Extract every medication. Use null for missing fields. Be precise and faithful.`
                 {error && <div className="err-box"><span>⚠️</span><span>{error}</span></div>}
                 {result && <>
                   <div className="stats-grid">
-                    {[{icon:"💊",val:medCount,lbl:"Medications"},{icon:"✅",val:result.medications?.filter(m=>m.dosage).length||0,lbl:"With dosage"},{icon:"📋",val:result.medications?.filter(m=>m.instructions).length||0,lbl:"With instructions"}]
+                    {[{icon:"💊",val:medCount,lbl:"Medications"},{icon:"✅",val:result.medications?.filter(m=>m.dosage&&m.dosage!=='null').length||0,lbl:"With dosage"},{icon:"📋",val:result.medications?.filter(m=>m.instructions&&m.instructions!=='null').length||0,lbl:"With instructions"}]
                       .map((s,i) => (
                         <div className="stat-tile" key={i} style={{animationDelay:`${i*80}ms`}}>
                           <div className="st-icon">{s.icon}</div><div className="st-val">{s.val}</div><div className="st-lbl">{s.lbl}</div>
@@ -420,9 +379,9 @@ Extract every medication. Use null for missing fields. Be precise and faithful.`
                   {(result.patientName||result.doctorName||result.date) && (
                     <div className="info-box" style={{animationDelay:"240ms"}}>
                       <div className="ibox-hdr">Prescription Info</div>
-                      {result.patientName && <div className="irow"><span className="ikey">Patient</span><span className="ival">{result.patientName}</span></div>}
-                      {result.doctorName && <div className="irow"><span className="ikey">Doctor</span><span className="ival">{result.doctorName}</span></div>}
-                      {result.date && <div className="irow"><span className="ikey">Date</span><span className="ival">{result.date}</span></div>}
+                      {result.patientName && result.patientName !== 'null' && <div className="irow"><span className="ikey">Patient</span><span className="ival">{result.patientName}</span></div>}
+                      {result.doctorName && result.doctorName !== 'null' && <div className="irow"><span className="ikey">Doctor</span><span className="ival">{result.doctorName}</span></div>}
+                      {result.date && result.date !== 'null' && <div className="irow"><span className="ikey">Date</span><span className="ival">{result.date}</span></div>}
                     </div>
                   )}
                   <div className="sec-lbl">Medications</div>
@@ -431,22 +390,24 @@ Extract every medication. Use null for missing fields. Be precise and faithful.`
                       <div className="med-card" key={i}>
                         <div className="mc-top">
                           <div className="mc-name">{med.name}</div>
-                          {med.dosage && <div className="mc-badge">{med.dosage}</div>}
+                          {med.dosage && med.dosage !== 'null' && <div className="mc-badge">{med.dosage}</div>}
                         </div>
-                        {med.description && <div className="mc-desc"><span className="mc-desc-i">ℹ</span><span>{med.description}</span></div>}
+                        {med.description && med.description !== 'null' && (
+                          <div className="mc-desc"><span className="mc-desc-i">ℹ</span><span>{med.description}</span></div>
+                        )}
                         <div className="mc-div" />
                         <div className="mc-details">
-                          {med.frequency && <div className="mc-det"><span className="dlbl">Frequency</span><span className="dval">{med.frequency}</span></div>}
-                          {med.duration && <div className="mc-det"><span className="dlbl">Duration</span><span className="dval">{med.duration}</span></div>}
-                          {med.quantity && <div className="mc-det"><span className="dlbl">Quantity</span><span className="dval">{med.quantity}</span></div>}
-                          {med.instructions && <div className="mc-det fw"><span className="dlbl">Instructions</span><span className="dval">{med.instructions}</span></div>}
+                          {med.frequency && med.frequency !== 'null' && <div className="mc-det"><span className="dlbl">Frequency</span><span className="dval">{med.frequency}</span></div>}
+                          {med.duration && med.duration !== 'null' && <div className="mc-det"><span className="dlbl">Duration</span><span className="dval">{med.duration}</span></div>}
+                          {med.quantity && med.quantity !== 'null' && <div className="mc-det"><span className="dlbl">Quantity</span><span className="dval">{med.quantity}</span></div>}
+                          {med.instructions && med.instructions !== 'null' && <div className="mc-det fw"><span className="dlbl">Instructions</span><span className="dval">{med.instructions}</span></div>}
                         </div>
                       </div>
                     ))
                     : <div className="err-box"><span>⚠️</span><span>No medications could be extracted.</span></div>
                   }
-                  {result.generalNotes && (
-                    <div className="notes-box" style={{animationDelay:`${300+medCount*70}ms`}}>
+                  {result.generalNotes && result.generalNotes !== 'null' && (
+                    <div className="notes-box">
                       <div className="nlbl">General Notes</div>
                       <div className="ntxt">{result.generalNotes}</div>
                     </div>
