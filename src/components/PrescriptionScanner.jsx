@@ -1172,7 +1172,7 @@ export default function PrescriptionScanner() {
         setScanProgress(95);
         if (data.choices) {
           let text = data.choices[0].message.content.replaceAll("```json","").replaceAll("```","").trim();
-          const parsed = JSON.parse(text);
+          const parsed = validateParsed(JSON.parse(text));
           setScanProgress(100);
           setTimeout(() => setDoneScanSteps([0,1,2,3]), 400);
           setTimeout(() => {
@@ -1255,23 +1255,58 @@ export default function PrescriptionScanner() {
     } catch(e) { alert("Copy failed — please copy manually."); }
   };
 
+  /* ── XSS protection: escape all AI-returned strings before HTML injection ── */
+  const escHtml = (str) => {
+    if (!str) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  };
+
+  /* ── Validate AI JSON response shape before using it ── */
+  const validateParsed = (obj) => {
+    if (!obj || typeof obj !== "object") throw new Error("Invalid response structure from AI.");
+    if (!Array.isArray(obj.medications)) obj.medications = [];
+    obj.medications = obj.medications.map(m => ({
+      name:         typeof m.name === "string"         ? m.name.slice(0, 120)         : "Unknown",
+      description:  typeof m.description === "string"  ? m.description.slice(0, 500)  : null,
+      dosage:       typeof m.dosage === "string"        ? m.dosage.slice(0, 60)        : null,
+      frequency:    typeof m.frequency === "string"     ? m.frequency.slice(0, 100)    : null,
+      duration:     typeof m.duration === "string"      ? m.duration.slice(0, 100)     : null,
+      instructions: typeof m.instructions === "string"  ? m.instructions.slice(0, 300) : null,
+      quantity:     typeof m.quantity === "string"      ? m.quantity.slice(0, 60)      : null,
+      confidence:   typeof m.confidence === "number"    ? Math.min(100, Math.max(0, m.confidence)) : 75,
+    }));
+    obj.patientName   = typeof obj.patientName   === "string" ? obj.patientName.slice(0, 120)   : null;
+    obj.doctorName    = typeof obj.doctorName    === "string" ? obj.doctorName.slice(0, 120)    : null;
+    obj.date          = typeof obj.date          === "string" ? obj.date.slice(0, 60)           : null;
+    obj.generalNotes  = typeof obj.generalNotes  === "string" ? obj.generalNotes.slice(0, 600)  : null;
+    return obj;
+  };
+
   const doPrint = () => {
-    const text = buildReportText();
     const w = window.open("", "_blank", "width=700,height=900");
+    if (!w) { alert("Popup blocked — please allow popups for this site."); return; }
     const meds = (result.medications || []);
+    const e = escHtml; // shorthand
     const medRows = meds.map((med, i) => `
       <div class="med-block">
         <div class="med-num">Rx ${String(i+1).padStart(2,"0")}</div>
-        <div class="med-name">${med.name}${notNull(med.dosage) ? ' <span class="dosage">'+med.dosage+'</span>' : ''}</div>
-        ${notNull(med.description) ? '<div class="med-desc">'+med.description+'</div>' : ''}
+        <div class="med-name">${e(med.name)}${notNull(med.dosage) ? ' <span class="dosage">'+e(med.dosage)+'</span>' : ''}</div>
+        ${notNull(med.description) ? '<div class="med-desc">'+e(med.description)+'</div>' : ''}
         <div class="med-grid">
-          ${notNull(med.frequency)    ? '<div><b>Frequency</b><br>'+med.frequency+'</div>' : ''}
-          ${notNull(med.duration)     ? '<div><b>Duration</b><br>'+med.duration+'</div>' : ''}
-          ${notNull(med.quantity)     ? '<div><b>Quantity</b><br>'+med.quantity+'</div>' : ''}
-          ${notNull(med.instructions) ? '<div style="grid-column:span 3"><b>Instructions</b><br>'+med.instructions+'</div>' : ''}
+          ${notNull(med.frequency)    ? '<div><b>Frequency</b><br>'+e(med.frequency)+'</div>' : ''}
+          ${notNull(med.duration)     ? '<div><b>Duration</b><br>'+e(med.duration)+'</div>' : ''}
+          ${notNull(med.quantity)     ? '<div><b>Quantity</b><br>'+e(med.quantity)+'</div>' : ''}
+          ${notNull(med.instructions) ? '<div style="grid-column:span 3"><b>Instructions</b><br>'+e(med.instructions)+'</div>' : ''}
         </div>
       </div>`).join('');
-    w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>VaidyaDrishti Report</title>
+    w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline';">
+    <title>VaidyaDrishti Report</title>
     <style>
       body { font-family: Georgia, serif; max-width: 680px; margin: 32px auto; color: #1a1a2e; }
       h1 { font-size: 22px; color: #4338ca; border-bottom: 2px solid #4338ca; padding-bottom: 8px; margin-bottom: 4px; }
@@ -1293,17 +1328,17 @@ export default function PrescriptionScanner() {
       @media print { body { margin: 16px; } }
     </style></head><body>
     <h1>📋 Prescription Report</h1>
-    <div class="meta">Generated by VaidyaDrishti AI · ${new Date().toLocaleString("en-IN")}</div>
+    <div class="meta">Generated by VaidyaDrishti AI &middot; ${e(new Date().toLocaleString("en-IN"))}</div>
     ${notNull(result.patientName)||notNull(result.doctorName)||notNull(result.date) ? `
     <table class="info-table">
-      ${notNull(result.patientName)?'<tr><td>Patient</td><td>'+result.patientName+'</td></tr>':''}
-      ${notNull(result.doctorName)?'<tr><td>Doctor</td><td>'+result.doctorName+'</td></tr>':''}
-      ${notNull(result.date)?'<tr><td>Date</td><td>'+result.date+'</td></tr>':''}
+      ${notNull(result.patientName)?'<tr><td>Patient</td><td>'+e(result.patientName)+'</td></tr>':''}
+      ${notNull(result.doctorName)?'<tr><td>Doctor</td><td>'+e(result.doctorName)+'</td></tr>':''}
+      ${notNull(result.date)?'<tr><td>Date</td><td>'+e(result.date)+'</td></tr>':''}
     </table>` : ''}
-    ${notNull(result.generalNotes) ? '<div class="notes">'+result.generalNotes+'</div>' : ''}
+    ${notNull(result.generalNotes) ? '<div class="notes">'+e(result.generalNotes)+'</div>' : ''}
     <div class="sec-title">Medications (${meds.length})</div>
     ${medRows}
-    <div class="footer">VaidyaDrishti AI · Powered by Groq · For informational use only</div>
+    <div class="footer">VaidyaDrishti AI &middot; Powered by Groq &middot; For informational use only</div>
     </body></html>`);
     w.document.close();
     setTimeout(() => { w.focus(); w.print(); }, 400);
@@ -1364,7 +1399,10 @@ export default function PrescriptionScanner() {
       const data = await res.json();
       if (data.choices) {
         let text = data.choices[0].message.content.replaceAll("```json","").replaceAll("```","").trim();
-        setInteractions(JSON.parse(text));
+        const ix = JSON.parse(text);
+        if (!ix || typeof ix !== "object") throw new Error("Bad interactions response");
+        if (!Array.isArray(ix.interactions)) ix.interactions = [];
+        setInteractions(ix);
       }
     } catch(e) { setInteractions({ interactions: [], safe: true, error: true }); }
     setChecking(false);
