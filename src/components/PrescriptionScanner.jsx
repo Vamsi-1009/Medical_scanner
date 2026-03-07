@@ -420,194 +420,199 @@ const styles = `
   .err-box { background: rgba(248,113,113,0.06); border: 1px solid rgba(248,113,113,0.2); border-radius: 12px; padding: 14px 16px; display: flex; gap: 9px; align-items: flex-start; font-size: 13px; color: var(--red); line-height: 1.5; }
 
   /* ══════════════════════════════════════════════
-     SCAN OVERLAY — CINEMATIC DEEP SPACE
+     SCAN OVERLAY — VAIDYADRISHTI NEURAL SCAN
   ══════════════════════════════════════════════ */
   .scan-overlay {
     position: fixed; inset: 0; z-index: 100;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: clamp(16px, 3vh, 28px);
-    background: #040610;
-    animation: soIn 0.5s ease both;
+    gap: clamp(14px, 2.5vh, 24px);
+    background: radial-gradient(ellipse 120% 100% at 50% 50%, #060818 0%, #020408 100%);
+    animation: soIn 0.45s ease both;
     overflow: hidden;
   }
   @keyframes soIn { from{opacity:0;} to{opacity:1;} }
-  .scan-overlay.exit { animation: soOut 0.5s ease forwards; }
-  @keyframes soOut { to{opacity:0;transform:scale(1.03);} }
+  .scan-overlay.exit { animation: soOut 0.45s ease forwards; }
+  @keyframes soOut { to{opacity:0;transform:scale(1.02);} }
 
-  /* Ambient nebula glow layers */
+  /* ── DEEP BACKGROUND GLOW ── */
   .scan-overlay::before {
-    content: ''; position: absolute; inset: 0; pointer-events: none;
+    content:''; position:absolute; inset:0; pointer-events:none;
     background:
-      radial-gradient(ellipse 70% 50% at 30% 40%, rgba(108,99,255,0.12) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 60% at 70% 60%, rgba(245,166,35,0.07) 0%, transparent 55%);
-    animation: nebulaShift 8s ease-in-out infinite alternate;
+      radial-gradient(ellipse 60% 60% at 50% 50%, rgba(108,99,255,0.06) 0%, transparent 65%),
+      radial-gradient(ellipse 30% 30% at 50% 50%, rgba(167,139,250,0.04) 0%, transparent 50%);
+    animation: bgPulse 4s ease-in-out infinite;
   }
-  @keyframes nebulaShift { 0%{transform:scale(1) rotate(0deg);} 100%{transform:scale(1.1) rotate(2deg);} }
+  @keyframes bgPulse { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
 
-  /* Particle field */
-  .scan-particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
-  .scan-particles::before, .scan-particles::after {
-    content: ''; position: absolute;
-    width: 1px; height: 1px; border-radius: 50%;
-    background: rgba(255,255,255,0.6);
-    box-shadow:
-      120px 80px 0 rgba(108,99,255,0.6), 240px 160px 0 rgba(255,255,255,0.4),
-      80px 240px 0 rgba(245,166,35,0.5), 360px 120px 0 rgba(45,212,191,0.4),
-      480px 200px 0 rgba(255,255,255,0.3), 600px 80px 0 rgba(108,99,255,0.4),
-      720px 300px 0 rgba(245,166,35,0.3), 160px 360px 0 rgba(255,255,255,0.5),
-      300px 400px 0 rgba(45,212,191,0.3), 520px 380px 0 rgba(108,99,255,0.3),
-      40px 180px 0 rgba(255,255,255,0.25), 680px 440px 0 rgba(245,166,35,0.4),
-      200px 480px 0 rgba(255,255,255,0.3), 440px 60px 0 rgba(45,212,191,0.4),
-      780px 160px 0 rgba(108,99,255,0.25);
-    animation: twinkle 4s ease-in-out infinite;
+  /* ── STAR FIELD ── */
+  .scan-particles { position:absolute; inset:0; pointer-events:none; }
+  .scan-particles::before {
+    content:''; position:absolute; inset:0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 85% 8%, rgba(167,139,250,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 25% 75%, rgba(45,212,191,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 88%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 45% 35%, rgba(245,166,35,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 55%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 5% 50%, rgba(167,139,250,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 60% 20%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 35% 90%, rgba(45,212,191,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 80% 40%, rgba(245,166,35,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 15% 30%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 65%, rgba(167,139,250,0.35) 0%, transparent 100%);
+    animation: starTwinkle 5s ease-in-out infinite;
   }
-  .scan-particles::after { animation: twinkle 4s ease-in-out infinite 2s; opacity: 0.6; }
-  @keyframes twinkle { 0%,100%{opacity:0.8;} 50%{opacity:0.2;} }
+  .scan-particles::after {
+    content:''; position:absolute; inset:0;
+    background-image:
+      radial-gradient(1px 1px at 20% 60%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 75% 30%, rgba(108,99,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 40% 10%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 95% 70%, rgba(45,212,191,0.4) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 50% 50%, rgba(245,166,35,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 30% 45%, rgba(255,255,255,0.35) 0%, transparent 100%);
+    animation: starTwinkle 5s ease-in-out infinite 2.5s;
+  }
+  @keyframes starTwinkle { 0%,100%{opacity:1;} 50%{opacity:0.25;} }
 
   /* ── SCAN IMAGE FRAME ── */
   .scan-frame {
-    position: relative; z-index: 5;
-    width: clamp(180px, 35vw, 260px);
-    border-radius: 16px; overflow: hidden;
-    border: 1px solid rgba(108,99,255,0.4);
-    box-shadow: 0 0 40px rgba(108,99,255,0.3), 0 0 80px rgba(108,99,255,0.1);
+    position:relative; z-index:5;
+    width: clamp(160px, 32vw, 240px);
+    border-radius:14px; overflow:hidden;
+    border:1px solid rgba(108,99,255,0.35);
+    box-shadow: 0 0 0 1px rgba(108,99,255,0.1), 0 0 30px rgba(108,99,255,0.2), 0 0 60px rgba(108,99,255,0.06);
   }
-  .scan-frame img { width: 100%; max-height: 180px; object-fit: contain; display: block; filter: brightness(0.4) saturate(0.5); }
-  /* scan grid overlay */
+  .scan-frame img { width:100%; max-height:160px; object-fit:contain; display:block; filter:brightness(0.35) saturate(0.4) hue-rotate(240deg); }
   .scan-frame::after {
-    content: ''; position: absolute; inset: 0; pointer-events: none;
-    background:
-      linear-gradient(rgba(108,99,255,0.07) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(108,99,255,0.07) 1px, transparent 1px);
-    background-size: 20px 20px;
-    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    content:''; position:absolute; inset:0; pointer-events:none;
+    background: linear-gradient(rgba(108,99,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(108,99,255,0.05) 1px, transparent 1px);
+    background-size: 18px 18px;
   }
-  /* corner brackets */
-  .scan-corner { position: absolute; width: 18px; height: 18px; border-color: var(--accent2); border-style: solid; }
-  .sc-tl { top: 8px; left: 8px; border-width: 2px 0 0 2px; }
-  .sc-tr { top: 8px; right: 8px; border-width: 2px 2px 0 0; }
-  .sc-bl { bottom: 8px; left: 8px; border-width: 0 0 2px 2px; }
-  .sc-br { bottom: 8px; right: 8px; border-width: 0 2px 2px 0; }
-  /* scan beam */
+  .scan-corner { position:absolute; width:16px; height:16px; border-color:rgba(167,139,250,0.8); border-style:solid; }
+  .sc-tl{top:6px;left:6px;border-width:2px 0 0 2px;} .sc-tr{top:6px;right:6px;border-width:2px 2px 0 0;}
+  .sc-bl{bottom:6px;left:6px;border-width:0 0 2px 2px;} .sc-br{bottom:6px;right:6px;border-width:0 2px 2px 0;}
   .scan-beam {
-    position: absolute; left: 0; right: 0; height: 2px; z-index: 2;
-    background: linear-gradient(90deg, transparent, rgba(108,99,255,0.4), rgba(167,139,250,1), rgba(255,255,255,0.9), rgba(167,139,250,1), rgba(108,99,255,0.4), transparent);
-    box-shadow: 0 0 12px rgba(167,139,250,0.8), 0 0 24px rgba(108,99,255,0.5);
-    animation: beamScan 2s cubic-bezier(0.4,0,0.6,1) infinite;
+    position:absolute; left:0; right:0; height:2px; z-index:2;
+    background: linear-gradient(90deg, transparent 0%, rgba(108,99,255,0.3) 20%, rgba(167,139,250,0.9) 45%, rgba(220,210,255,1) 50%, rgba(167,139,250,0.9) 55%, rgba(108,99,255,0.3) 80%, transparent 100%);
+    box-shadow: 0 0 8px rgba(167,139,250,0.7), 0 0 18px rgba(108,99,255,0.4), 0 -2px 6px rgba(167,139,250,0.2), 0 2px 6px rgba(167,139,250,0.2);
+    animation: beamScan 2.2s ease-in-out infinite;
   }
-  @keyframes beamScan { 0%{top:5%;opacity:1;} 45%{top:95%;opacity:0.9;} 50%{top:95%;opacity:0;} 51%{top:5%;opacity:0;} 55%{top:5%;opacity:1;} 100%{top:95%;opacity:0.9;} }
+  @keyframes beamScan { 0%{top:4%;opacity:0;} 8%{opacity:1;} 48%{top:93%;opacity:1;} 55%{top:93%;opacity:0;} 56%{top:4%;opacity:0;} 100%{top:93%;opacity:1;} }
 
-  /* ── CORE ANIMATION — ORBITING RINGS ── */
-  .scan-anim { position: relative; z-index: 5; width: 160px; height: 160px; }
+  /* ══ MAIN ANIMATION — NEURAL PULSE SYSTEM ══ */
+  .scan-anim { position:relative; z-index:5; width:180px; height:180px; flex-shrink:0; }
 
-  /* outer ambient ring */
-  .so-ring { position: absolute; border-radius: 50%; }
-  .so-r0 {
-    inset: 0; border: 1px dashed rgba(108,99,255,0.2);
-    animation: soSpin 20s linear infinite;
+  /* ── Radar sweep ── */
+  .so-radar {
+    position:absolute; inset:0; border-radius:50%;
+    border:1px solid rgba(108,99,255,0.15);
+    overflow:hidden;
   }
-  .so-r1 {
-    inset: 10px; border: 1px solid transparent;
-    border-top-color: rgba(108,99,255,0.7); border-right-color: rgba(108,99,255,0.3);
-    animation: soSpin 3s linear infinite;
-    filter: drop-shadow(0 0 4px rgba(108,99,255,0.5));
+  .so-radar::before {
+    content:''; position:absolute;
+    top:50%; left:50%; width:50%; height:50%;
+    transform-origin:0% 100%;
+    background: conic-gradient(from 0deg, transparent 0deg, rgba(108,99,255,0.25) 30deg, rgba(167,139,250,0.5) 60deg, rgba(108,99,255,0.1) 80deg, transparent 90deg);
+    animation: radarSweep 2.5s linear infinite;
+    border-radius:0 100% 0 0;
   }
-  .so-r2 {
-    inset: 28px; border: 1.5px solid transparent;
-    border-top-color: rgba(245,166,35,0.8); border-left-color: rgba(245,166,35,0.4);
-    animation: soSpin 2s linear infinite reverse;
-    filter: drop-shadow(0 0 5px rgba(245,166,35,0.5));
-  }
-  .so-r3 {
-    inset: 48px; border: 1px solid transparent;
-    border-top-color: rgba(45,212,191,0.7); border-right-color: rgba(45,212,191,0.2);
-    animation: soSpin 1.4s linear infinite;
-    filter: drop-shadow(0 0 4px rgba(45,212,191,0.5));
-  }
-  @keyframes soSpin { to { transform: rotate(360deg); } }
+  @keyframes radarSweep { to { transform: rotate(360deg); } }
 
-  /* Orbiting dot on ring 1 */
-  .so-dot1 {
-    position: absolute; inset: 10px; border-radius: 50%;
-    animation: soSpin 3s linear infinite;
+  /* Radar tick rings */
+  .so-r0 { position:absolute; border-radius:50%; border:1px solid rgba(108,99,255,0.12); inset:0; }
+  .so-r1 { position:absolute; border-radius:50%; border:1px solid rgba(108,99,255,0.1); inset:28px; }
+  .so-r2 { position:absolute; border-radius:50%; border:1px solid rgba(108,99,255,0.08); inset:56px; }
+  .so-r3 { position:absolute; border-radius:50%; border:1px solid rgba(108,99,255,0.06); inset:84px; }
+
+  /* Cross-hair lines */
+  .so-crossh {
+    position:absolute; inset:0; pointer-events:none;
   }
-  .so-dot1::before {
-    content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%) translateY(-50%);
-    width: 6px; height: 6px; border-radius: 50%; background: var(--accent2);
-    box-shadow: 0 0 10px var(--accent2), 0 0 20px rgba(108,99,255,0.5);
+  .so-crossh::before {
+    content:''; position:absolute; top:50%; left:0; right:0; height:1px;
+    background:linear-gradient(90deg, transparent, rgba(108,99,255,0.2), rgba(108,99,255,0.35), rgba(108,99,255,0.2), transparent);
+    transform:translateY(-50%);
   }
-  /* Orbiting dot on ring 2 */
-  .so-dot2 {
-    position: absolute; inset: 28px; border-radius: 50%;
-    animation: soSpin 2s linear infinite reverse;
-  }
-  .so-dot2::before {
-    content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%) translateY(-50%);
-    width: 5px; height: 5px; border-radius: 50%; background: var(--gold);
-    box-shadow: 0 0 8px var(--gold), 0 0 16px rgba(245,166,35,0.4);
+  .so-crossh::after {
+    content:''; position:absolute; left:50%; top:0; bottom:0; width:1px;
+    background:linear-gradient(180deg, transparent, rgba(108,99,255,0.2), rgba(108,99,255,0.35), rgba(108,99,255,0.2), transparent);
+    transform:translateX(-50%);
   }
 
-  /* Center core */
+  /* Blip dots — targets on radar */
+  .so-blip {
+    position:absolute; border-radius:50%;
+    background:var(--teal); box-shadow:0 0 6px var(--teal);
+    animation:blipPulse 2s ease-in-out infinite;
+  }
+  .so-blip:nth-child(1){width:4px;height:4px;top:22%;left:62%;animation-delay:0s;}
+  .so-blip:nth-child(2){width:3px;height:3px;top:58%;left:30%;animation-delay:0.6s;background:var(--gold);box-shadow:0 0 5px var(--gold);}
+  .so-blip:nth-child(3){width:5px;height:5px;top:70%;left:70%;animation-delay:1.2s;background:var(--accent2);box-shadow:0 0 7px var(--accent2);}
+  .so-blip:nth-child(4){width:3px;height:3px;top:35%;left:25%;animation-delay:1.8s;}
+  @keyframes blipPulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.3;transform:scale(0.5);} }
+
+  /* Center core — pulsing nucleus */
   .so-core {
-    position: absolute; inset: 58px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 40% 40%, rgba(167,139,250,0.5), rgba(108,99,255,0.3), transparent);
-    border: 1px solid rgba(167,139,250,0.5);
-    animation: coreBreath 2s ease-in-out infinite;
-    box-shadow: 0 0 20px rgba(108,99,255,0.4), inset 0 0 16px rgba(167,139,250,0.2);
+    position:absolute; inset:78px; border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, rgba(167,139,250,0.6), rgba(108,99,255,0.4), rgba(80,70,200,0.2));
+    border:1px solid rgba(167,139,250,0.5);
+    box-shadow: 0 0 12px rgba(108,99,255,0.5), 0 0 24px rgba(108,99,255,0.2), inset 0 0 10px rgba(167,139,250,0.2);
+    animation:corePulse 1.8s ease-in-out infinite;
   }
-  @keyframes coreBreath {
-    0%,100% { transform: scale(1); box-shadow: 0 0 20px rgba(108,99,255,0.4), inset 0 0 16px rgba(167,139,250,0.2); }
-    50% { transform: scale(1.2); box-shadow: 0 0 36px rgba(108,99,255,0.7), inset 0 0 24px rgba(167,139,250,0.4); }
-  }
-  /* Eye symbol inside core */
-  .so-core::after {
-    content: '◎'; position: absolute; inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px; color: rgba(167,139,250,0.7);
-    animation: soSpin 6s linear infinite;
+  @keyframes corePulse {
+    0%,100%{transform:scale(1);box-shadow:0 0 12px rgba(108,99,255,0.5),0 0 24px rgba(108,99,255,0.2),inset 0 0 10px rgba(167,139,250,0.2);}
+    50%{transform:scale(1.15);box-shadow:0 0 20px rgba(108,99,255,0.8),0 0 40px rgba(108,99,255,0.3),inset 0 0 16px rgba(167,139,250,0.35);}
   }
 
-  /* ── BRAND TITLE IN OVERLAY ── */
-  .so-brand {
-    position: relative; z-index: 5; text-align: center;
+  /* Outer ripple ring */
+  .so-ripple {
+    position:absolute; inset:-8px; border-radius:50%;
+    border:1px solid rgba(108,99,255,0.25);
+    animation:rippleOut 3s ease-out infinite;
   }
-  .so-brand-name {
-    font-family: 'Playfair Display', serif; font-size: 20px; color: var(--text);
-    letter-spacing: 1px; display: block;
+  .so-ripple2 {
+    position:absolute; inset:-18px; border-radius:50%;
+    border:1px solid rgba(108,99,255,0.12);
+    animation:rippleOut 3s ease-out infinite 1s;
   }
-  .so-brand-sub {
-    font-family: 'JetBrains Mono', monospace; font-size: 10px;
-    color: var(--text-faint); letter-spacing: 3px; text-transform: uppercase; display: block; margin-top: 3px;
+  @keyframes rippleOut {
+    0%{opacity:0.8;transform:scale(0.95);}
+    100%{opacity:0;transform:scale(1.15);}
   }
 
-  /* ── PROGRESS BAR ── */
-  .so-prog { position: relative; z-index: 5; width: clamp(240px, 60vw, 300px); }
-  .so-prog-top { display: flex; justify-content: space-between; margin-bottom: 7px; }
-  .so-prog-lbl { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent2); text-transform: uppercase; letter-spacing: 2px; }
-  .so-prog-pct { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-faint); }
-  .so-prog-track { height: 2px; background: rgba(255,255,255,0.07); border-radius: 99px; overflow: hidden; }
-  .so-prog-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2), var(--gold)); border-radius: 99px; transition: width 0.35s ease; position: relative; }
-  .so-prog-fill::after { content: ''; position: absolute; right: 0; top: -2px; width: 6px; height: 6px; border-radius: 50%; background: var(--gold2); box-shadow: 0 0 8px var(--gold); }
+  /* ── BRAND & TEXT ── */
+  .so-brand { position:relative; z-index:5; text-align:center; }
+  .so-brand-name { font-family:'Playfair Display',serif; font-size:clamp(16px,3vw,20px); color:var(--text); letter-spacing:0.5px; display:block; }
+  .so-brand-sub { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text-faint); letter-spacing:3px; text-transform:uppercase; display:block; margin-top:3px; }
+
+  /* ── PROGRESS ── */
+  .so-prog { position:relative; z-index:5; width:clamp(220px,55vw,290px); }
+  .so-prog-top { display:flex; justify-content:space-between; margin-bottom:7px; }
+  .so-prog-lbl { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--accent2); text-transform:uppercase; letter-spacing:2px; }
+  .so-prog-pct { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text-faint); }
+  .so-prog-track { height:2px; background:rgba(255,255,255,0.05); border-radius:99px; overflow:hidden; position:relative; }
+  .so-prog-fill { height:100%; background:linear-gradient(90deg,#4f46e5,#6c63ff,#a78bfa,#f5a623); border-radius:99px; transition:width 0.35s ease; position:relative; }
+  .so-prog-fill::after { content:''; position:absolute; right:-2px; top:50%; transform:translateY(-50%); width:5px; height:5px; border-radius:50%; background:#ffd27a; box-shadow:0 0 8px var(--gold),0 0 16px rgba(245,166,35,0.4); }
 
   /* ── STEP LIST ── */
-  .so-steps { position: relative; z-index: 5; display: flex; flex-direction: column; gap: 6px; width: clamp(240px, 60vw, 300px); }
+  .so-steps { position:relative; z-index:5; display:flex; flex-direction:column; gap:5px; width:clamp(220px,55vw,290px); }
   .so-step {
-    display: flex; align-items: center; gap: 10px; padding: 8px 12px;
-    border-radius: 10px; background: rgba(255,255,255,0.02);
-    border: 1px solid rgba(255,255,255,0.05);
-    font-size: 12px; color: rgba(240,244,255,0.3); transition: all 0.4s;
-    font-family: 'JetBrains Mono', monospace;
+    display:flex; align-items:center; gap:10px; padding:7px 12px;
+    border-radius:9px; background:rgba(255,255,255,0.02);
+    border:1px solid rgba(255,255,255,0.04);
+    font-size:11px; color:rgba(240,244,255,0.25); transition:all 0.4s;
+    font-family:'JetBrains Mono',monospace; letter-spacing:0.3px;
   }
-  .so-step.active {
-    background: rgba(108,99,255,0.12); border-color: rgba(108,99,255,0.3);
-    color: var(--accent2); box-shadow: 0 0 16px rgba(108,99,255,0.1);
-  }
-  .so-step.done { background: rgba(45,212,191,0.06); border-color: rgba(45,212,191,0.2); color: var(--teal); }
-  .so-step-ico { font-size: 13px; flex-shrink: 0; }
+  .so-step.active { background:rgba(108,99,255,0.1); border-color:rgba(108,99,255,0.25); color:var(--accent2); }
+  .so-step.done { background:rgba(45,212,191,0.05); border-color:rgba(45,212,191,0.18); color:var(--teal); }
+  .so-step-ico { font-size:12px; flex-shrink:0; width:16px; text-align:center; }
 
-  /* ── RESPONSIVE ── */
-  @media (max-width: 768px) {
+  /* ── DOT1 / DOT2 — not used in new anim, kept for compat ── */
+  .so-dot1,.so-dot2 { display:none; }
+
+    @media (max-width: 768px) {
     .header { height: 56px; }
     .brand-sub { display: none; }
     .step-bar { margin-top: 20px; }
@@ -963,17 +968,15 @@ export default function PrescriptionScanner() {
                   </div>
                 )}
 
-                {/* API KEY */}
-                <div style={{display:"flex",flexDirection:"column",gap:"6px"}}>
-                  <label className="api-label">Groq API Key</label>
-                  <input
-                    type="password" placeholder="gsk_..." value={apiKey}
-                    onChange={e => setApiKey(e.target.value)}
-                    className={`api-input${apiKey ? " has-key" : ""}`}
-                  />
-                </div>
+                {/* API KEY — hidden from UI, reads from .env */}
+                <input
+                  type="password" value={apiKey}
+                  onChange={e => setApiKey(e.target.value)}
+                  style={{position:"absolute",opacity:0,pointerEvents:"none",width:0,height:0,overflow:"hidden"}}
+                  tabIndex={-1} aria-hidden="true"
+                />
 
-                <button className="btn-primary" onClick={scanPrescription} disabled={!image || !apiKey}>
+                <button className="btn-primary" onClick={scanPrescription} disabled={!image}>
                   <span>🔬</span> Analyze Prescription
                 </button>
                 {image && <button className="btn-ghost" onClick={resetAll}>✕ Clear</button>}
@@ -1146,12 +1149,16 @@ export default function PrescriptionScanner() {
             )}
 
             <div className="scan-anim">
-              <div className="so-ring so-r0" />
-              <div className="so-ring so-r1" />
-              <div className="so-ring so-r2" />
-              <div className="so-ring so-r3" />
-              <div className="so-dot1" />
-              <div className="so-dot2" />
+              <div className="so-ripple2" />
+              <div className="so-ripple" />
+              <div className="so-radar">
+                <div className="so-blip" />
+                <div className="so-blip" />
+                <div className="so-blip" />
+                <div className="so-blip" />
+              </div>
+              <div className="so-r0" /><div className="so-r1" /><div className="so-r2" /><div className="so-r3" />
+              <div className="so-crossh" />
               <div className="so-core" />
             </div>
 
