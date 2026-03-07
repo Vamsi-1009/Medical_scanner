@@ -1,32 +1,15 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap');
-
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg: #030712;
-    --glass: rgba(255,255,255,0.04);
-    --glass-border: rgba(255,255,255,0.08);
-    --cyan: #06b6d4;
-    --cyan-soft: rgba(6,182,212,0.12);
-    --emerald: #10b981;
-    --blue: #3b82f6;
-    --text: #f0f9ff;
-    --text-dim: rgba(240,249,255,0.6);
-    --text-faint: rgba(240,249,255,0.28);
-  }
-
+  :root { --bg: #030712; --glass: rgba(255,255,255,0.04); --glass-border: rgba(255,255,255,0.08); --cyan: #06b6d4; --cyan-soft: rgba(6,182,212,0.12); --emerald: #10b981; --blue: #3b82f6; --text: #f0f9ff; --text-dim: rgba(240,249,255,0.6); --text-faint: rgba(240,249,255,0.28); }
   body { background: var(--bg); font-family: 'Outfit', sans-serif; min-height: 100vh; overflow-x: hidden; }
-
   .app { min-height: 100vh; background: radial-gradient(ellipse 80% 50% at 20% -10%, rgba(6,182,212,0.1) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 80% 110%, rgba(59,130,246,0.08) 0%, transparent 55%), #030712; color: var(--text); padding-bottom: 80px; position: relative; }
-
   .orb { position: fixed; pointer-events: none; z-index: 0; border-radius: 50%; }
   .orb1 { width:600px;height:600px;background:radial-gradient(circle,rgba(6,182,212,0.05) 0%,transparent 70%);top:-200px;left:-100px;animation:floatOrb 20s ease-in-out infinite; }
   .orb2 { width:500px;height:500px;background:radial-gradient(circle,rgba(59,130,246,0.05) 0%,transparent 70%);bottom:-100px;right:-100px;animation:floatOrb 25s ease-in-out infinite reverse; }
   @keyframes floatOrb { 0%,100%{transform:translate(0,0)scale(1);}33%{transform:translate(30px,-40px)scale(1.05);}66%{transform:translate(-20px,20px)scale(0.97);} }
-
   .header { position:relative;z-index:10;padding:26px 40px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.06);backdrop-filter:blur(20px);background:rgba(3,7,18,0.7); }
   @media(max-width:600px){ .header{padding:18px 18px 16px;} }
   .header-left{display:flex;align-items:center;gap:14px;}
@@ -36,7 +19,6 @@ const styles = `
   .header-badge{display:flex;align-items:center;gap:6px;padding:6px 14px;background:var(--cyan-soft);border:1px solid rgba(6,182,212,0.22);border-radius:99px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--cyan);}
   .pulse-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 6px var(--cyan);animation:blink 2s ease-in-out infinite;}
   @keyframes blink{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.85);}}
-
   .step-bar { position:relative;z-index:5;max-width:700px;margin:32px auto 0;padding:0 28px;display:flex;align-items:center;gap:0; }
   @media(max-width:600px){.step-bar{padding:0 16px;margin-top:24px;}}
   .step-item { display:flex;align-items:center;gap:10px;flex:1;transition:opacity 0.4s; }
@@ -52,10 +34,8 @@ const styles = `
   .step-connector { flex:1;height:1px;max-width:80px;margin:0 12px;background:linear-gradient(90deg,rgba(6,182,212,0.2),rgba(255,255,255,0.06));position:relative;overflow:hidden; }
   .step-connector.active::after { content:'';position:absolute;top:0;left:0;height:100%;width:100%;background:linear-gradient(90deg,var(--cyan),var(--blue));animation:connFill 0.8s ease forwards; }
   @keyframes connFill{from{width:0%;}to{width:100%;}}
-
   .main-wrap { position:relative;z-index:5;max-width:900px;margin:24px auto 0;padding:0 28px; }
   @media(max-width:600px){.main-wrap{padding:0 14px;}}
-
   .upload-card { background:var(--glass);border:1px solid var(--glass-border);border-radius:24px;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);overflow:hidden;position:relative;transition:all 0.5s ease; }
   .upload-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent);}
   .upload-card.exit { animation:cardExit 0.5s ease forwards; }
@@ -64,7 +44,6 @@ const styles = `
   .card-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--text-faint);flex:1;}
   .card-tag{font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 10px;border-radius:99px;background:var(--cyan-soft);color:var(--cyan);border:1px solid rgba(6,182,212,0.2);}
   .upload-body{padding:24px;display:flex;flex-direction:column;gap:14px;}
-
   .drop-zone{ position:relative;border:1.5px dashed rgba(255,255,255,0.09);border-radius:18px;padding:48px 20px;display:flex;flex-direction:column;align-items:center;gap:14px;cursor:pointer;transition:all 0.3s ease;background:rgba(255,255,255,0.018);overflow:hidden; }
   .drop-zone::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 110%,rgba(6,182,212,0.05) 0%,transparent 65%);pointer-events:none;}
   .drop-zone:hover,.drop-zone.dz-on{border-color:rgba(6,182,212,0.45);background:rgba(6,182,212,0.03);box-shadow:inset 0 0 40px rgba(6,182,212,0.04),0 0 20px rgba(6,182,212,0.07);}
@@ -75,11 +54,9 @@ const styles = `
   .dz-text p{font-size:12px;color:var(--text-faint);text-align:center;margin-top:4px;z-index:1;}
   .fmt-chips{display:flex;gap:5px;z-index:1;}
   .fchip{font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 8px;border-radius:6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);color:var(--text-faint);}
-
   .preview-wrap{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--glass-border);background:rgba(255,255,255,0.02);}
   .preview-wrap img{width:100%;max-height:260px;object-fit:contain;display:block;}
   .preview-lbl{position:absolute;bottom:0;left:0;right:0;padding:10px 14px;background:linear-gradient(0deg,rgba(3,7,18,0.9),transparent);font-size:11px;color:rgba(16,185,129,0.8);font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:6px;}
-
   .btn-scan{ width:100%;padding:15px 20px;border:none;border-radius:14px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:16px;font-weight:700;letter-spacing:0.3px;transition:all 0.25s ease;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,rgba(6,182,212,0.9),rgba(59,130,246,0.85));color:#fff;box-shadow:0 4px 24px rgba(6,182,212,0.25),inset 0 1px 0 rgba(255,255,255,0.15); }
   .btn-scan::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent);transition:left 0.5s ease;}
   .btn-scan:hover:not(:disabled)::before{left:100%;}
@@ -87,7 +64,6 @@ const styles = `
   .btn-scan:disabled{opacity:0.3;cursor:not-allowed;}
   .btn-clear{width:100%;padding:11px;border:1px solid rgba(255,255,255,0.07);border-radius:12px;background:transparent;color:var(--text-faint);font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;transition:all 0.2s;}
   .btn-clear:hover{border-color:rgba(239,68,68,0.35);color:rgba(239,68,68,0.75);background:rgba(239,68,68,0.04);}
-
   .scan-overlay { position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;background:rgba(3,7,18,0.97);backdrop-filter:blur(16px);animation:overlayIn 0.4s ease both; }
   @keyframes overlayIn{from{opacity:0;}to{opacity:1;}}
   .scan-overlay.exit{animation:overlayOut 0.6s ease forwards;}
@@ -120,7 +96,6 @@ const styles = `
   .scan-step.active{background:rgba(6,182,212,0.06);border-color:rgba(6,182,212,0.2);color:var(--text-dim);}
   .scan-step.done{background:rgba(16,185,129,0.05);border-color:rgba(16,185,129,0.15);color:rgba(16,185,129,0.7);}
   .ss-icon{font-size:14px;flex-shrink:0;}
-
   .results-card { background:var(--glass);border:1px solid var(--glass-border);border-radius:24px;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);overflow:hidden;position:relative;animation:cardEnter 0.6s cubic-bezier(0.16,1,0.3,1) both; }
   .results-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(6,182,212,0.25),transparent);}
   @keyframes cardEnter{from{opacity:0;transform:translateY(30px)scale(0.97);}to{opacity:1;transform:translateY(0)scale(1);}}
@@ -128,24 +103,19 @@ const styles = `
   .results-body::-webkit-scrollbar{width:3px;}
   .results-body::-webkit-scrollbar-track{background:transparent;}
   .results-body::-webkit-scrollbar-thumb{background:rgba(6,182,212,0.18);border-radius:99px;}
-
   .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
   @media(max-width:600px){.stats-grid{grid-template-columns:1fr 1fr;}}
   .stat-tile{ padding:14px 16px;border-radius:14px;background:linear-gradient(135deg,rgba(6,182,212,0.06),rgba(59,130,246,0.04));border:1px solid rgba(6,182,212,0.12);display:flex;flex-direction:column;gap:4px;animation:tileIn 0.4s ease both; }
   @keyframes tileIn{from{opacity:0;transform:scale(0.95);}to{opacity:1;transform:scale(1);}}
   .st-icon{font-size:18px;} .st-val{font-family:'Instrument Serif',serif;font-size:26px;color:var(--text);line-height:1;} .st-lbl{font-size:11px;color:var(--text-faint);}
-
   .info-box{ background:linear-gradient(135deg,rgba(6,182,212,0.05),rgba(59,130,246,0.03));border:1px solid rgba(6,182,212,0.14);border-radius:14px;padding:14px 16px;animation:slideIn 0.4s ease both; }
   .ibox-hdr{font-family:'JetBrains Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:1.8px;color:var(--cyan);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
   .ibox-hdr::after{content:'';flex:1;height:1px;background:rgba(6,182,212,0.14);}
-  .irow{display:flex;align-items:baseline;gap:10px;font-size:13px;margin-bottom:5px;}
-  .irow:last-child{margin-bottom:0;}
+  .irow{display:flex;align-items:baseline;gap:10px;font-size:13px;margin-bottom:5px;} .irow:last-child{margin-bottom:0;}
   .ikey{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--text-faint);min-width:58px;text-transform:uppercase;letter-spacing:0.8px;}
   .ival{color:var(--text);font-weight:500;}
-
   .sec-lbl{display:flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:2px;color:var(--text-faint);}
   .sec-lbl::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.06);}
-
   .med-card{ background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;overflow:hidden;position:relative;transition:border-color 0.3s,box-shadow 0.3s,transform 0.2s; }
   .med-card:hover{border-color:rgba(6,182,212,0.18);box-shadow:0 8px 28px rgba(0,0,0,0.18);transform:translateY(-1px);}
   .med-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--cyan),var(--blue),var(--emerald));border-radius:99px 0 0 99px;}
@@ -160,7 +130,6 @@ const styles = `
   .mc-det{display:flex;flex-direction:column;gap:2px;} .mc-det.fw{grid-column:1/-1;}
   .dlbl{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-faint);}
   .dval{font-size:12.5px;color:var(--text-dim);font-weight:500;line-height:1.4;}
-
   .notes-box{background:linear-gradient(135deg,rgba(16,185,129,0.05),rgba(6,182,212,0.02));border:1px solid rgba(16,185,129,0.14);border-radius:14px;padding:14px 16px;}
   .nlbl{font-family:'JetBrains Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:1.8px;color:var(--emerald);margin-bottom:7px;}
   .ntxt{font-size:13px;color:var(--text-dim);line-height:1.6;}
@@ -177,6 +146,8 @@ const SCAN_STEPS = [
   { icon: "💊", label: "Extracting medications" },
   { icon: "📋", label: "Compiling results" },
 ];
+
+const isNull = (v) => !v || v === 'null' || v === 'undefined';
 
 export default function PrescriptionScanner() {
   const [phase, setPhase] = useState("upload");
@@ -227,10 +198,7 @@ export default function PrescriptionScanner() {
     try {
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${apiKey}`,
-        },
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
         body: JSON.stringify({
           model: "meta-llama/llama-4-scout-17b-16e-instruct",
           max_tokens: 1500,
@@ -238,9 +206,7 @@ export default function PrescriptionScanner() {
             role: "user",
             content: [
               { type: "image_url", image_url: { url: `data:${imageBase64.type};base64,${imageBase64.data}` } },
-              {
-                type: "text",
-                text: `You are a medical prescription scanner. Analyze this image and extract ALL medication details exactly as written.
+              { type: "text", text: `You are a medical prescription scanner. Analyze this image and extract ALL medication details exactly as written.
 Return ONLY a JSON object (no markdown, no backticks):
 {
   "patientName": "string or null",
@@ -248,17 +214,16 @@ Return ONLY a JSON object (no markdown, no backticks):
   "date": "string or null",
   "medications": [{
     "name": "exact name as written",
-    "description": "one concise sentence about what this medicine is used for",
-    "dosage": "strength e.g. 500mg",
-    "frequency": "how often e.g. twice daily",
-    "duration": "e.g. 7 days",
-    "instructions": "special instructions e.g. after meals",
-    "quantity": "number of tablets if mentioned"
+    "description": "1-2 sentence explanation of what this medicine is and what condition it treats",
+    "dosage": "strength e.g. 500mg or null",
+    "frequency": "how often e.g. twice daily or null",
+    "duration": "e.g. 7 days or null",
+    "instructions": "special instructions e.g. after meals or null",
+    "quantity": "number of tablets if mentioned or null"
   }],
   "generalNotes": "any other notes or null"
 }
-Extract every medication. For missing fields use JSON null (not the string "null"). Only include fields that are clearly visible in the prescription. Be precise and faithful.`
-              }
+IMPORTANT: Every medication MUST have a description — never leave it null. Use your medical knowledge to write 1-2 clear sentences about what the medicine is and why it is prescribed. For all other fields, use JSON null (not the string null) if not visible in the prescription.` }
             ]
           }]
         })
@@ -266,8 +231,7 @@ Extract every medication. For missing fields use JSON null (not the string "null
       const data = await res.json();
       if (data.error) throw new Error("Groq Error: " + data.error.message);
       if (!data.choices) throw new Error("No response: " + JSON.stringify(data));
-      const text = data.choices[0].message.content;
-      parsed = JSON.parse(text.replace(/```json|```/g, "").trim());
+      parsed = JSON.parse(data.choices[0].message.content.replace(/```json|```/g, "").trim());
     } catch (err) {
       apiError = err.message || "Failed to scan. Please try again.";
     }
@@ -369,19 +333,22 @@ Extract every medication. For missing fields use JSON null (not the string "null
                 {error && <div className="err-box"><span>⚠️</span><span>{error}</span></div>}
                 {result && <>
                   <div className="stats-grid">
-                    {[{icon:"💊",val:medCount,lbl:"Medications"},{icon:"✅",val:result.medications?.filter(m=>m.dosage&&m.dosage!=='null').length||0,lbl:"With dosage"},{icon:"📋",val:result.medications?.filter(m=>m.instructions&&m.instructions!=='null').length||0,lbl:"With instructions"}]
-                      .map((s,i) => (
-                        <div className="stat-tile" key={i} style={{animationDelay:`${i*80}ms`}}>
-                          <div className="st-icon">{s.icon}</div><div className="st-val">{s.val}</div><div className="st-lbl">{s.lbl}</div>
-                        </div>
+                    {[
+                      {icon:"💊",val:medCount,lbl:"Medications"},
+                      {icon:"✅",val:result.medications?.filter(m=>!isNull(m.dosage)).length||0,lbl:"With dosage"},
+                      {icon:"📋",val:result.medications?.filter(m=>!isNull(m.instructions)).length||0,lbl:"With instructions"}
+                    ].map((s,i) => (
+                      <div className="stat-tile" key={i} style={{animationDelay:`${i*80}ms`}}>
+                        <div className="st-icon">{s.icon}</div><div className="st-val">{s.val}</div><div className="st-lbl">{s.lbl}</div>
+                      </div>
                     ))}
                   </div>
                   {(result.patientName||result.doctorName||result.date) && (
                     <div className="info-box" style={{animationDelay:"240ms"}}>
                       <div className="ibox-hdr">Prescription Info</div>
-                      {result.patientName && result.patientName !== 'null' && <div className="irow"><span className="ikey">Patient</span><span className="ival">{result.patientName}</span></div>}
-                      {result.doctorName && result.doctorName !== 'null' && <div className="irow"><span className="ikey">Doctor</span><span className="ival">{result.doctorName}</span></div>}
-                      {result.date && result.date !== 'null' && <div className="irow"><span className="ikey">Date</span><span className="ival">{result.date}</span></div>}
+                      {!isNull(result.patientName) && <div className="irow"><span className="ikey">Patient</span><span className="ival">{result.patientName}</span></div>}
+                      {!isNull(result.doctorName) && <div className="irow"><span className="ikey">Doctor</span><span className="ival">{result.doctorName}</span></div>}
+                      {!isNull(result.date) && <div className="irow"><span className="ikey">Date</span><span className="ival">{result.date}</span></div>}
                     </div>
                   )}
                   <div className="sec-lbl">Medications</div>
@@ -390,23 +357,23 @@ Extract every medication. For missing fields use JSON null (not the string "null
                       <div className="med-card" key={i}>
                         <div className="mc-top">
                           <div className="mc-name">{med.name}</div>
-                          {med.dosage && med.dosage !== 'null' && <div className="mc-badge">{med.dosage}</div>}
+                          {!isNull(med.dosage) && <div className="mc-badge">{med.dosage}</div>}
                         </div>
-                        {med.description && med.description !== 'null' && (
+                        {!isNull(med.description) && (
                           <div className="mc-desc"><span className="mc-desc-i">ℹ</span><span>{med.description}</span></div>
                         )}
                         <div className="mc-div" />
                         <div className="mc-details">
-                          {med.frequency && med.frequency !== 'null' && <div className="mc-det"><span className="dlbl">Frequency</span><span className="dval">{med.frequency}</span></div>}
-                          {med.duration && med.duration !== 'null' && <div className="mc-det"><span className="dlbl">Duration</span><span className="dval">{med.duration}</span></div>}
-                          {med.quantity && med.quantity !== 'null' && <div className="mc-det"><span className="dlbl">Quantity</span><span className="dval">{med.quantity}</span></div>}
-                          {med.instructions && med.instructions !== 'null' && <div className="mc-det fw"><span className="dlbl">Instructions</span><span className="dval">{med.instructions}</span></div>}
+                          {!isNull(med.frequency) && <div className="mc-det"><span className="dlbl">Frequency</span><span className="dval">{med.frequency}</span></div>}
+                          {!isNull(med.duration) && <div className="mc-det"><span className="dlbl">Duration</span><span className="dval">{med.duration}</span></div>}
+                          {!isNull(med.quantity) && <div className="mc-det"><span className="dlbl">Quantity</span><span className="dval">{med.quantity}</span></div>}
+                          {!isNull(med.instructions) && <div className="mc-det fw"><span className="dlbl">Instructions</span><span className="dval">{med.instructions}</span></div>}
                         </div>
                       </div>
                     ))
                     : <div className="err-box"><span>⚠️</span><span>No medications could be extracted.</span></div>
                   }
-                  {result.generalNotes && result.generalNotes !== 'null' && (
+                  {!isNull(result.generalNotes) && (
                     <div className="notes-box">
                       <div className="nlbl">General Notes</div>
                       <div className="ntxt">{result.generalNotes}</div>
