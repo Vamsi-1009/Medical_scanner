@@ -272,8 +272,8 @@ export default function PrescriptionScanner() {
         '"generalNotes":"any doctor notes or null",' +
         '"medications":[{"name":"exact name","description":"1-2 sentences on what this medicine is and what it treats",' +
         '"dosage":"strength like 500mg or null","frequency":"how often or null","duration":"how long or null",' +
-        '"instructions":"special notes or null","quantity":"tablet count or null"}]}' +
-        "\nRules: 1) Extract every single medication listed. 2) description is REQUIRED for every medication - never null. 3) Use JSON null (not the word null) for unknown fields.";
+        '"instructions":"special notes or null","quantity":"tablet count or null","confidence":85}]}' +
+        "\nRules: 1) Extract every single medication listed. 2) description is REQUIRED for every medication - never null. 3) Use JSON null (not the word null) for unknown fields. 4) confidence is 0-100 how clearly you could read that medicine name.";
 
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
@@ -631,8 +631,8 @@ export default function PrescriptionScanner() {
                           <div className="mc-top">
                             <div className="mc-name-row">
                               <span className="mc-name">{med.name}</span>
-                              <a className="btn-search" href={"https://www.1mg.com/search/all?name=" + encodeURIComponent(med.name)} target="_blank" rel="noreferrer">1mg 🔗</a>
-                              <a className="btn-search" href={"https://www.netmeds.com/catalogsearch/result?q=" + encodeURIComponent(med.name)} target="_blank" rel="noreferrer">Netmeds 🔗</a>
+                              <a className="btn-search" href={"https://www.1mg.com/search/all?name=" + encodeURIComponent(med.name)} target="_blank" rel="noreferrer">🛒 1mg</a>
+                              <a className="btn-search" href={"https://www.netmeds.com/catalogsearch/result?q=" + encodeURIComponent(med.name)} target="_blank" rel="noreferrer">🛒 Netmeds</a>
                             </div>
                             <div style={{display:"flex",alignItems:"center",gap:"6px",flexShrink:0}}>
                               {notNull(med.dosage) && <div className="mc-badge">{med.dosage}</div>}
