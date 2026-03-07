@@ -112,7 +112,7 @@ const styles = `
   .med-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;overflow:hidden;position:relative;opacity:1;margin-bottom:2px;}
   .med-card:hover{border-color:rgba(6,182,212,0.3);box-shadow:0 8px 28px rgba(0,0,0,0.18);transform:translateY(-1px);}
   .med-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--cyan),var(--blue),var(--emerald));}
-  .mc-top{padding:14px 16px 0 19px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+  .mc-top{padding:14px 16px 0 19px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;}
   .mc-name{font-family:'Instrument Serif',serif;font-size:19px;color:var(--text);line-height:1.2;}
   .mc-badge{padding:3px 9px;background:linear-gradient(135deg,rgba(6,182,212,0.14),rgba(59,130,246,0.09));border:1px solid rgba(6,182,212,0.22);border-radius:7px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--cyan);white-space:nowrap;flex-shrink:0;}
   .mc-desc{padding:7px 16px 0 19px;font-size:12px;color:rgba(6,182,212,0.75);font-style:italic;line-height:1.5;display:flex;gap:5px;align-items:flex-start;}
@@ -128,7 +128,7 @@ const styles = `
   .count-pill{font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 10px;margin-left:auto;background:linear-gradient(135deg,rgba(6,182,212,0.14),rgba(59,130,246,0.09));border:1px solid rgba(6,182,212,0.22);border-radius:99px;color:var(--cyan);}
 
   /* ── COPY BUTTON ── */
-  .btn-copy{position:absolute;top:10px;right:10px;padding:4px 10px;border:1px solid rgba(6,182,212,0.25);border-radius:8px;background:rgba(6,182,212,0.08);color:var(--cyan);font-family:'JetBrains Mono',monospace;font-size:10px;cursor:pointer;transition:all 0.2s;z-index:2;}
+  .btn-copy{padding:4px 10px;border:1px solid rgba(6,182,212,0.25);border-radius:8px;background:rgba(6,182,212,0.08);color:var(--cyan);font-family:'JetBrains Mono',monospace;font-size:10px;cursor:pointer;transition:all 0.2s;flex-shrink:0;margin-left:auto;}
   .btn-copy:hover{background:rgba(6,182,212,0.18);}
   .btn-copy.copied{background:rgba(16,185,129,0.15);border-color:rgba(16,185,129,0.35);color:var(--emerald);}
   /* ── PDF / HISTORY BUTTONS ── */
@@ -634,9 +634,11 @@ export default function PrescriptionScanner() {
                               <a className="btn-search" href={"https://www.1mg.com/search/all?name=" + encodeURIComponent(med.name)} target="_blank" rel="noreferrer">1mg 🔗</a>
                               <a className="btn-search" href={"https://www.netmeds.com/catalogsearch/result?q=" + encodeURIComponent(med.name)} target="_blank" rel="noreferrer">Netmeds 🔗</a>
                             </div>
-                            {notNull(med.dosage) && <div className="mc-badge">{med.dosage}</div>}
+                            <div style={{display:"flex",alignItems:"center",gap:"6px",flexShrink:0}}>
+                              {notNull(med.dosage) && <div className="mc-badge">{med.dosage}</div>}
+                              <button className={"btn-copy" + (copiedId === i ? " copied" : "")} onClick={() => copyMed(med, i)}>{copiedId === i ? "✓ Copied" : "📋 Copy"}</button>
+                            </div>
                           </div>
-                          <button className={"btn-copy" + (copiedId === i ? " copied" : "")} onClick={() => copyMed(med, i)}>{copiedId === i ? "✓ Copied" : "📋 Copy"}</button>
                           {notNull(med.description) && (
                             <div className="mc-desc">
                               <span className="mc-desc-i">ℹ</span>
