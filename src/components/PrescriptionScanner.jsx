@@ -2042,7 +2042,7 @@ export default function PrescriptionScanner() {
           </div>
         </div>
         <div className="footer-disclaimer">
-          © {new Date().getFullYear()} VaidyaDrishti AI · Built by <strong style={{color:"var(--accent2)",fontWeight:600}}>Vamsi</strong> · For informational use only · Not a substitute for professional medical advice · Always consult your doctor or pharmacist
+          © {new Date().getFullYear()} VaidyaDrishti AI · For informational use only · Not a substitute for professional medical advice · Always consult your doctor or pharmacist
         </div>
       </footer>
 
