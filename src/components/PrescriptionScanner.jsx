@@ -1,4 +1,5 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
+import html2canvas from "html2canvas";
 import "./PrescriptionScanner.css";
 import "./PrescriptionScanner2.css";
 
@@ -36,6 +37,7 @@ export default function PrescriptionScanner() {
   const [interactions, setInteractions] = useState(null);
   const [showSplash, setShowSplash] = useState(true);
   const [splashFading, setSplashFading] = useState(false);
+  const resultsRef = useRef(null);
 
   useEffect(() => {
     const fadeTimer = setTimeout(() => setSplashFading(true), 1700);
@@ -150,7 +152,6 @@ export default function PrescriptionScanner() {
       if (notNull(med.instructions)) lines.push("   ⚠ " + med.instructions);
     });
     lines.push(""); lines.push("─".repeat(30));
-    lines.push("vaidyadrishti.ai — Powered by Groq");
     return lines.join("\n");
   };
 
@@ -165,11 +166,45 @@ export default function PrescriptionScanner() {
     setShareModal(false);
   };
 
-  const doShareWhatsApp = () => {
-    const text = buildReportText();
-    const encoded = encodeURIComponent(text);
-    window.open("https://wa.me/?text=" + encoded, "_blank");
-    setShareModal(false);
+  const doShareWhatsApp = async () => {
+    if (!resultsRef.current) return;
+    try {
+      const canvas = await html2canvas(resultsRef.current, {
+        backgroundColor: "#F8FAFC",
+        scale: 2,
+        logging: false,
+        useCORS: true
+      });
+
+      const blob = await new Promise(res => canvas.toBlob(res, "image/jpeg", 0.9));
+      const file = new File([blob], "prescription_report.jpg", { type: "image/jpeg" });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: "VaidyaDrishti AI Report",
+          text: "Medical Prescription Analysis by VaidyaDrishti AI"
+        });
+      } else {
+        // Fallback: Download image and open WhatsApp with text
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "prescription_report.jpg";
+        a.click();
+        URL.revokeObjectURL(url);
+
+        const text = buildReportText();
+        window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank");
+      }
+      setShareModal(false);
+    } catch (e) {
+      console.error("Share failed", e);
+      // Final fallback to text only
+      const text = buildReportText();
+      window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank");
+      setShareModal(false);
+    }
   };
 
   const doCopyClipboard = async () => {
@@ -261,7 +296,7 @@ export default function PrescriptionScanner() {
     ${notNull(result.generalNotes) ? '<div class="notes">' + e(result.generalNotes) + '</div>' : ''}
     <div class="sec-title">Medications (${meds.length})</div>
     ${medRows}
-    <div class="footer">VaidyaDrishti AI &middot; Powered by Groq &middot; For informational use only</div>
+    <div class="footer">For informational use only</div>
     </body></html>`);
     w.document.close();
     setTimeout(() => { w.focus(); w.print(); }, 400);
@@ -522,7 +557,7 @@ export default function PrescriptionScanner() {
 
           {/* RESULTS PHASE */}
           {phase === "results" && (
-            <div className="results-wrap">
+            <div className="results-wrap" ref={resultsRef}>
               {error ? (
                 <div className="err-box"><span>⚠️</span><span>{error}</span></div>
               ) : result && (
