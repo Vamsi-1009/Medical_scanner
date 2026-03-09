@@ -391,9 +391,6 @@ export default function PrescriptionScanner() {
           </div>
           <div className="nav-links">
             <button className={`nav-link${phase === "upload" ? " active" : ""}`} onClick={resetAll}>Home</button>
-            <button className={`nav-link${phase === "scanning" ? " active" : ""}`} onClick={() => { resetAll(); setTimeout(() => document.querySelector('.drop-zone input')?.click(), 100); }}>Scan</button>
-            <button className={`nav-link${phase === "results" ? " active" : ""}`} onClick={() => { if (result) { setPhase("results"); } else if (history.length > 0) { setResult(history[0].data); setPhase("results"); } }}>Results</button>
-            <div className="nav-pill"><div className="nav-dot" />Groq Vision</div>
           </div>
         </nav>
 
@@ -407,8 +404,7 @@ export default function PrescriptionScanner() {
               </h1>
               <p>Upload medical prescriptions and receive intelligent AI-powered scan analysis with medication details, dosage, and scheduling — instantly.</p>
               <div className="hero-actions">
-                <button className="btn-primary" onClick={() => document.querySelector('.drop-zone input')?.click()}>📤 Upload Scan</button>
-                <button className="btn-secondary" onClick={() => document.querySelector('.main-wrap')?.scrollIntoView({ behavior: 'smooth' })}>Learn More ↓</button>
+                <button className="btn-secondary" onClick={() => document.querySelector('.features-section')?.scrollIntoView({ behavior: 'smooth' })}>Learn More ↓</button>
               </div>
             </div>
           </section>
