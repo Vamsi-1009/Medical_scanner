@@ -1,5 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from "react";
-import html2canvas from "html2canvas";
+import { useState, useCallback, useEffect } from "react";
 import "./PrescriptionScanner.css";
 import "./PrescriptionScanner2.css";
 
@@ -37,7 +36,6 @@ export default function PrescriptionScanner() {
   const [interactions, setInteractions] = useState(null);
   const [showSplash, setShowSplash] = useState(true);
   const [splashFading, setSplashFading] = useState(false);
-  const resultsRef = useRef(null);
 
   useEffect(() => {
     const fadeTimer = setTimeout(() => setSplashFading(true), 1700);
@@ -152,6 +150,7 @@ export default function PrescriptionScanner() {
       if (notNull(med.instructions)) lines.push("   ⚠ " + med.instructions);
     });
     lines.push(""); lines.push("─".repeat(30));
+    lines.push("vaidyadrishti.ai — Powered by Groq");
     return lines.join("\n");
   };
 
@@ -166,73 +165,11 @@ export default function PrescriptionScanner() {
     setShareModal(false);
   };
 
-  const doShareWhatsApp = async () => {
-    if (!resultsRef.current) return;
-    try {
-      const canvas = await html2canvas(resultsRef.current, {
-        backgroundColor: "#F8FAFC",
-        scale: 3,
-        logging: false,
-        useCORS: true,
-        allowTaint: true,
-        onclone: (clonedDoc) => {
-          const el = clonedDoc.querySelector(".results-wrap");
-          if (el) {
-            el.style.animation = "none";
-            el.style.transition = "none";
-            el.style.opacity = "1";
-            el.style.visibility = "visible";
-            el.style.transform = "none";
-            el.style.paddingBottom = "40px";
-          }
-          // Hide elements for a compact share image
-          [".res-actions-bar", ".sb-sched", ".sb-tools", ".btn-rescan", ".navbar"].forEach(s => {
-            const node = clonedDoc.querySelector(s);
-            if (node) node.style.display = "none";
-          });
-
-          clonedDoc.querySelectorAll(".med-card").forEach(card => {
-            card.style.background = "#ffffff";
-            card.style.opacity = "1";
-          });
-          const hero = clonedDoc.querySelector(".res-hero");
-          if (hero) {
-            hero.style.background = "linear-gradient(135deg, #0F766E 0%, #0D9488 40%, #06B6D4 100%)";
-            hero.style.opacity = "1";
-          }
-          clonedDoc.querySelectorAll(".mc-desc-band").forEach(band => {
-            band.style.opacity = "1";
-          });
-        }
-      });
-
-      const blob = await new Promise(res => canvas.toBlob(res, "image/jpeg", 0.95));
-      const file = new File([blob], "vaidyadrishti_report.jpg", { type: "image/jpeg" });
-
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          files: [file],
-          title: "VaidyaDrishti AI Report",
-          text: "Medical Prescription Analysis by VaidyaDrishti AI"
-        });
-      } else {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "vaidyadrishti_report.jpg";
-        a.click();
-        URL.revokeObjectURL(url);
-
-        const text = buildReportText();
-        window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank");
-      }
-      setShareModal(false);
-    } catch (e) {
-      console.error("Share failed", e);
-      const text = buildReportText();
-      window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank");
-      setShareModal(false);
-    }
+  const doShareWhatsApp = () => {
+    const text = buildReportText();
+    const encoded = encodeURIComponent(text);
+    window.open("https://wa.me/?text=" + encoded, "_blank");
+    setShareModal(false);
   };
 
   const doCopyClipboard = async () => {
@@ -324,7 +261,7 @@ export default function PrescriptionScanner() {
     ${notNull(result.generalNotes) ? '<div class="notes">' + e(result.generalNotes) + '</div>' : ''}
     <div class="sec-title">Medications (${meds.length})</div>
     ${medRows}
-    <div class="footer">For informational use only</div>
+    <div class="footer">VaidyaDrishti AI &middot; Powered by Groq &middot; For informational use only</div>
     </body></html>`);
     w.document.close();
     setTimeout(() => { w.focus(); w.print(); }, 400);
@@ -448,11 +385,12 @@ export default function PrescriptionScanner() {
 
         {/* ══ NAVBAR ══ */}
         <nav className="navbar">
-          <div className="nav-brand" onClick={resetAll} style={{ cursor: "pointer" }}>
+          <div className="nav-brand">
             <div className="nav-logo">👁</div>
             <div className="nav-title">Vaidya<span>Drishti</span></div>
           </div>
           <div className="nav-links">
+            <div className="nav-pill"><div className="nav-dot" />Live</div>
             <button className={`nav-link${phase === "upload" ? " active" : ""}`} onClick={resetAll}>Home</button>
           </div>
         </nav>
@@ -467,6 +405,7 @@ export default function PrescriptionScanner() {
               </h1>
               <p>Upload medical prescriptions and receive intelligent AI-powered scan analysis with medication details, dosage, and scheduling — instantly.</p>
               <div className="hero-actions">
+                <button className="btn-primary" onClick={() => document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth' })}>🔬 Scan Prescription →</button>
                 <button className="btn-secondary" onClick={() => document.querySelector('.features-section')?.scrollIntoView({ behavior: 'smooth' })}>Learn More ↓</button>
               </div>
             </div>
@@ -474,7 +413,7 @@ export default function PrescriptionScanner() {
         )}
 
         {/* ══ STEP BAR ══ */}
-        <div style={{ padding: phase === "upload" ? "28px 0 0" : "28px 0 0" }}>
+        <div style={{ padding: phase === "upload" ? "20px 0 0" : "28px 0 0" }}>
           <div className="step-bar">
             <div className="step-item">
               <div className={`step-num ${phase === "upload" ? "active" : "done"}`}>{phase === "upload" ? "01" : "✓"}</div>
@@ -494,7 +433,7 @@ export default function PrescriptionScanner() {
         </div>
 
         {/* ══ MAIN ══ */}
-        <div className="main-wrap">
+        <div className="main-wrap" id="upload-section">
 
           {/* UPLOAD PHASE */}
           {phase === "upload" && (
@@ -578,6 +517,7 @@ export default function PrescriptionScanner() {
 
                 <input type="password" value={apiKey} onChange={e => setApiKey(e.target.value)} style={{ position: "absolute", opacity: 0, pointerEvents: "none", width: 0, height: 0, overflow: "hidden" }} tabIndex={-1} aria-hidden="true" />
                 <button className="btn-primary full" onClick={scanPrescription} disabled={!image}><span>🔬</span> Analyze Prescription</button>
+                {!image && <div style={{ textAlign: "center", fontSize: "12px", color: "var(--text-faint)", marginTop: "-4px" }}>Upload an image above to enable</div>}
                 {image && <button className="btn-ghost" onClick={resetAll}>✕ Clear</button>}
               </div>
             </div>
@@ -585,7 +525,7 @@ export default function PrescriptionScanner() {
 
           {/* RESULTS PHASE */}
           {phase === "results" && (
-            <div className="results-wrap" ref={resultsRef}>
+            <div className="results-wrap">
               {error ? (
                 <div className="err-box"><span>⚠️</span><span>{error}</span></div>
               ) : result && (
@@ -875,22 +815,30 @@ export default function PrescriptionScanner() {
               <div className="features-sub">Powerful AI features designed for modern healthcare</div>
               <div className="features-grid">
                 <div className="feature-card">
-                  <div className="feature-icon">🧠</div>
+                  <div className="feature-icon">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0F766E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                  </div>
                   <div className="feature-name">AI Image Analysis</div>
                   <div className="feature-desc">Advanced vision model reads handwritten and printed prescriptions</div>
                 </div>
                 <div className="feature-card">
-                  <div className="feature-icon">⚡</div>
+                  <div className="feature-icon">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0F766E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                  </div>
                   <div className="feature-name">Instant Diagnosis</div>
                   <div className="feature-desc">Get medication details, dosage, and scheduling in seconds</div>
                 </div>
                 <div className="feature-card">
-                  <div className="feature-icon">🔒</div>
+                  <div className="feature-icon">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0F766E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  </div>
                   <div className="feature-name">Secure Data</div>
                   <div className="feature-desc">Images processed in-browser. No data stored on external servers</div>
                 </div>
                 <div className="feature-card">
-                  <div className="feature-icon">🎯</div>
+                  <div className="feature-icon">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0F766E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  </div>
                   <div className="feature-name">High Accuracy</div>
                   <div className="feature-desc">Confidence scoring per medication with smart validation</div>
                 </div>

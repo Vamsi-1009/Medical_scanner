@@ -173,12 +173,6 @@ body {
     align-items: center;
     gap: 10px;
     text-decoration: none;
-    transition: transform 0.2s ease, opacity 0.2s ease;
-}
-
-.nav-brand:hover {
-    transform: scale(1.02);
-    opacity: 0.9;
 }
 
 .nav-logo {
@@ -262,7 +256,7 @@ body {
 .hero {
     position: relative;
     overflow: hidden;
-    padding: clamp(48px, 8vw, 80px) clamp(16px, 5vw, 48px) clamp(40px, 6vw, 64px);
+    padding: clamp(48px, 8vw, 80px) clamp(16px, 5vw, 48px) clamp(32px, 4vw, 48px);
     text-align: center;
     background: linear-gradient(135deg, #F0FDFA 0%, #F8FAFC 40%, #ECFDF5 100%);
 }
@@ -356,7 +350,11 @@ body {
     justify-content: center;
     max-width: 480px;
     margin: 0 auto 28px;
-    padding: 0 16px;
+    padding: 16px 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
 }
 
 .step-item {
