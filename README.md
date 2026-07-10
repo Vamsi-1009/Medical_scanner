@@ -150,67 +150,49 @@ Medical data is sacred. VaidyaDrishti processes everything **locally in-browser*
 
 ## 🖥️ Deploying on Your Own Server
 
-This is a static frontend app (Vite + React) — no backend server is required. To host it on your own Ubuntu VM with Nginx:
+This is a static frontend app (Vite + React) — no backend server is required. It's hosted at `https://webstocking.com/medical-scanner/`, on the same VM and domain as the Expose-Chain project, as a path alongside it (not a separate subdomain).
+
+**Server reference:**
+- App source: `/root/apps/Medical_scanner` (this repo, cloned)
+- Built static files published to: `/var/www/medical-scanner/dist`
+- Served via the *existing* Nginx server block for `webstocking.com` (`/etc/nginx/sites-available/webstocking.com`) — a `location /medical-scanner/` block is added into that file, see [deploy/nginx.conf](deploy/nginx.conf)
+- SSH: `root@104.207.93.57 -p 22022`
 
 1. **First-time server setup**
    ```bash
-   sudo apt update && sudo apt install -y nginx nodejs npm git
-   sudo cp deploy/nginx.conf /etc/nginx/sites-available/medical-scanner
-   sudo ln -s /etc/nginx/sites-available/medical-scanner /etc/nginx/sites-enabled/
-   sudo rm -f /etc/nginx/sites-enabled/default
-   ```
-
-2. **Configure your API key**
-   ```bash
+   mkdir -p /root/apps && cd /root/apps
+   git clone https://github.com/Vamsi-1009/Medical_scanner.git
+   cd Medical_scanner
    cp .env.example .env
    # edit .env and set VITE_GROQ_API_KEY
    ```
+   Then paste the contents of [deploy/nginx.conf](deploy/nginx.conf) into the existing `server { ... }` block in `/etc/nginx/sites-available/webstocking.com` (before the Expose-Chain location block), and reload:
+   ```bash
+   nginx -t && systemctl reload nginx
+   ```
 
-3. **Build and publish**
+2. **Build and publish**
    ```bash
    bash deploy/deploy.sh
    ```
-   This pulls the latest code, installs dependencies, builds the app, and copies `dist/` to `/var/www/medical-scanner/dist`, then reloads Nginx.
-
-4. **Re-deploy after future changes**
-   ```bash
-   bash deploy/deploy.sh
-   ```
+   This resets to latest `main`, installs dependencies, builds, and copies `dist/` to `/var/www/medical-scanner/dist`, then reloads Nginx.
 
 > ⚠️ Since `VITE_GROQ_API_KEY` is bundled into the client-side JavaScript at build time, it is visible to anyone using the site. For production use, consider proxying Groq API calls through a small backend so the key stays server-side.
 
 ### 🔁 Auto-Deploy via GitHub Actions
 
-Every push to `main` triggers [.github/workflows/deploy.yml](.github/workflows/deploy.yml), which SSHes into your VM and runs `deploy/deploy.sh`.
+Every push to `main` triggers [.github/workflows/deploy.yml](.github/workflows/deploy.yml), which SSHes into the server as `root` and runs `deploy/deploy.sh` from `/root/apps/Medical_scanner`.
 
-**One-time setup on the VM:**
-
-1. Clone the repo to `~/Medical_scanner` and create `.env` there with `VITE_GROQ_API_KEY` set (deploy.sh will refuse to build without it).
-2. Generate a dedicated deploy key and authorize it:
-   ```bash
-   ssh-keygen -t ed25519 -f ~/.ssh/gh_deploy_key -N ""
-   cat ~/.ssh/gh_deploy_key.pub >> ~/.ssh/authorized_keys
-   cat ~/.ssh/gh_deploy_key   # copy this private key into the GitHub secret below
-   ```
-3. Allow the deploy user to run the specific commands `deploy.sh` needs without a password prompt:
-   ```bash
-   sudo visudo -f /etc/sudoers.d/medical-scanner-deploy
-   ```
-   Add (replace `deployuser` with your actual SSH username):
-   ```
-   deployuser ALL=(root) NOPASSWD: /usr/bin/mkdir -p /var/www/medical-scanner, /bin/rm -rf /var/www/medical-scanner/dist, /bin/cp -r * /var/www/medical-scanner/dist, /usr/sbin/nginx -t, /bin/systemctl reload nginx
-   ```
-
-**One-time setup on GitHub** — add these under repo **Settings → Secrets and variables → Actions**:
+**GitHub repo secrets** (Settings → Secrets and variables → Actions) — reuse the same values already configured for the Expose-Chain repo, since it's the same server:
 
 | Secret | Value |
 |---|---|
-| `SSH_HOST` | Your Spaceship VM's IP or hostname |
-| `SSH_USER` | The SSH username (the one granted `NOPASSWD` sudo above) |
-| `SSH_PRIVATE_KEY` | Contents of `~/.ssh/gh_deploy_key` from step 2 |
-| `SSH_PORT` | Only if not port 22 |
+| `SSH_HOST` | `104.207.93.57` |
+| `SSH_PORT` | `22022` |
+| `SSH_USER` | `root` |
+| `SSH_PRIVATE_KEY` | Same deploy key already authorized in this server's `~/.ssh/authorized_keys` (the one used by Expose-Chain's workflow) |
 
-Once secrets are set, any push to `main` (including this one) redeploys automatically.
+Once secrets are set, any push to `main` redeploys automatically.
 
 ---
 

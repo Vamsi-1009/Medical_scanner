@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-# Run this on the Spaceship VM inside the cloned repo directory.
-# Also invoked by .github/workflows/deploy.yml over SSH on every push to main —
-# the deploy user needs passwordless sudo for the specific commands below (see README).
+# Runs on the server at /root/apps/Medical_scanner (root user, no sudo needed).
+# Invoked by .github/workflows/deploy.yml over SSH on every push to main.
 set -euo pipefail
 
 APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -10,7 +9,7 @@ WEB_ROOT="/var/www/medical-scanner"
 cd "$APP_DIR"
 
 echo "==> Pulling latest code"
-git pull
+git fetch && git reset --hard origin/main
 
 echo "==> Installing dependencies"
 npm ci
@@ -24,12 +23,12 @@ echo "==> Building"
 npm run build
 
 echo "==> Publishing to $WEB_ROOT"
-sudo mkdir -p "$WEB_ROOT"
-sudo rm -rf "$WEB_ROOT/dist"
-sudo cp -r dist "$WEB_ROOT/dist"
+mkdir -p "$WEB_ROOT"
+rm -rf "$WEB_ROOT/dist"
+cp -r dist "$WEB_ROOT/dist"
 
 echo "==> Reloading nginx"
-sudo nginx -t
-sudo systemctl reload nginx
+nginx -t
+systemctl reload nginx
 
 echo "Deploy complete."
