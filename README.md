@@ -194,6 +194,8 @@ Every push to `main` triggers [.github/workflows/deploy.yml](.github/workflows/d
 
 Once secrets are set, any push to `main` redeploys automatically.
 
+**The flow only goes one way: GitHub → server.** Make code changes locally, push to `main`, and the server updates itself. Never edit files directly on the server — `deploy.sh` runs `git reset --hard origin/main` on every deploy, which discards anything not committed to GitHub.
+
 ---
 
 ## ⚠️ Medical Disclaimer
