@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Runs on the server at /root/apps/Medical_scanner (root user, no sudo needed).
+# Runs on the server as the "deploy" user (~/apps/Medical_scanner), which owns
+# /var/www/medical-scanner and has passwordless sudo for nginx -t / reload only.
 # Invoked by .github/workflows/deploy.yml over SSH on every push to main.
 set -euo pipefail
 
@@ -28,7 +29,7 @@ rm -rf "$WEB_ROOT/dist"
 cp -r dist "$WEB_ROOT/dist"
 
 echo "==> Reloading nginx"
-nginx -t
-systemctl reload nginx
+sudo nginx -t
+sudo systemctl reload nginx
 
 echo "Deploy complete."
