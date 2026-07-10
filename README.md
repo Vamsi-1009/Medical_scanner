@@ -153,14 +153,15 @@ Medical data is sacred. VaidyaDrishti processes everything **locally in-browser*
 This is a static frontend app (Vite + React) — no backend server is required. It's hosted at `https://webstocking.com/medical-scanner/`, on the same VM and domain as the Expose-Chain project, as a path alongside it (not a separate subdomain).
 
 **Server reference:**
-- App source: `/root/apps/Medical_scanner` (this repo, cloned)
-- Built static files published to: `/var/www/medical-scanner/dist`
+- App source: `/home/vamsi/apps/Medical_scanner` (this repo, cloned), owned by the non-root `vamsi` user
+- Built static files published to: `/var/www/medical-scanner/dist` (also owned by `vamsi`)
 - Served via the *existing* Nginx server block for `webstocking.com` (`/etc/nginx/sites-available/webstocking.com`) — a `location /medical-scanner/` block is added into that file, see [deploy/nginx.conf](deploy/nginx.conf)
-- SSH: `root@104.207.93.57 -p 22022`
+- SSH: `vamsi@104.207.93.57 -p 22022`
+- `vamsi` has passwordless `sudo` for exactly `nginx -t` and `systemctl reload nginx` (via `/etc/sudoers.d/medical-scanner-deploy`), nothing else
 
 1. **First-time server setup**
    ```bash
-   mkdir -p /root/apps && cd /root/apps
+   mkdir -p /home/vamsi/apps && cd /home/vamsi/apps
    git clone https://github.com/Vamsi-1009/Medical_scanner.git
    cd Medical_scanner
    cp .env.example .env
@@ -181,16 +182,16 @@ This is a static frontend app (Vite + React) — no backend server is required. 
 
 ### 🔁 Auto-Deploy via GitHub Actions
 
-Every push to `main` triggers [.github/workflows/deploy.yml](.github/workflows/deploy.yml), which SSHes into the server as `root` and runs `deploy/deploy.sh` from `/root/apps/Medical_scanner`.
+Every push to `main` triggers [.github/workflows/deploy.yml](.github/workflows/deploy.yml), which SSHes into the server as `vamsi` and runs `deploy/deploy.sh` from `/home/vamsi/apps/Medical_scanner`.
 
-**GitHub repo secrets** (Settings → Secrets and variables → Actions) — reuse the same values already configured for the Expose-Chain repo, since it's the same server:
+**GitHub repo secrets** (Settings → Secrets and variables → Actions):
 
 | Secret | Value |
 |---|---|
 | `SSH_HOST` | `104.207.93.57` |
 | `SSH_PORT` | `22022` |
-| `SSH_USER` | `root` |
-| `SSH_PRIVATE_KEY` | Same deploy key already authorized in this server's `~/.ssh/authorized_keys` (the one used by Expose-Chain's workflow) |
+| `SSH_USER` | `vamsi` |
+| `SSH_PRIVATE_KEY` | Same deploy key already authorized in `vamsi`'s `~/.ssh/authorized_keys` |
 
 Once secrets are set, any push to `main` redeploys automatically.
 

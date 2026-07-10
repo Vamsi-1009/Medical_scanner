@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Runs on the server as the "deploy" user (~/apps/Medical_scanner), which owns
+# Runs on the server as the "vamsi" user (~/apps/Medical_scanner), which owns
 # /var/www/medical-scanner and has passwordless sudo for nginx -t / reload only.
 # Invoked by .github/workflows/deploy.yml over SSH on every push to main.
 set -euo pipefail
