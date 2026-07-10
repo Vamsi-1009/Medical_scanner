@@ -148,6 +148,39 @@ Medical data is sacred. VaidyaDrishti processes everything **locally in-browser*
 
 ---
 
+## 🖥️ Deploying on Your Own Server
+
+This is a static frontend app (Vite + React) — no backend server is required. To host it on your own Ubuntu VM with Nginx:
+
+1. **First-time server setup**
+   ```bash
+   sudo apt update && sudo apt install -y nginx nodejs npm git
+   sudo cp deploy/nginx.conf /etc/nginx/sites-available/medical-scanner
+   sudo ln -s /etc/nginx/sites-available/medical-scanner /etc/nginx/sites-enabled/
+   sudo rm -f /etc/nginx/sites-enabled/default
+   ```
+
+2. **Configure your API key**
+   ```bash
+   cp .env.example .env
+   # edit .env and set VITE_GROQ_API_KEY
+   ```
+
+3. **Build and publish**
+   ```bash
+   bash deploy/deploy.sh
+   ```
+   This pulls the latest code, installs dependencies, builds the app, and copies `dist/` to `/var/www/medical-scanner/dist`, then reloads Nginx.
+
+4. **Re-deploy after future changes**
+   ```bash
+   bash deploy/deploy.sh
+   ```
+
+> ⚠️ Since `VITE_GROQ_API_KEY` is bundled into the client-side JavaScript at build time, it is visible to anyone using the site. For production use, consider proxying Groq API calls through a small backend so the key stays server-side.
+
+---
+
 ## ⚠️ Medical Disclaimer
 *VaidyaDrishti AI is a productivity and informational utility. It is NOT a diagnostic tool. Always cross-verify AI-generated summaries with a licensed pharmacist or your primary care physician before starting medication.*
 
