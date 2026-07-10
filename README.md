@@ -179,6 +179,39 @@ This is a static frontend app (Vite + React) — no backend server is required. 
 
 > ⚠️ Since `VITE_GROQ_API_KEY` is bundled into the client-side JavaScript at build time, it is visible to anyone using the site. For production use, consider proxying Groq API calls through a small backend so the key stays server-side.
 
+### 🔁 Auto-Deploy via GitHub Actions
+
+Every push to `main` triggers [.github/workflows/deploy.yml](.github/workflows/deploy.yml), which SSHes into your VM and runs `deploy/deploy.sh`.
+
+**One-time setup on the VM:**
+
+1. Clone the repo to `~/Medical_scanner` and create `.env` there with `VITE_GROQ_API_KEY` set (deploy.sh will refuse to build without it).
+2. Generate a dedicated deploy key and authorize it:
+   ```bash
+   ssh-keygen -t ed25519 -f ~/.ssh/gh_deploy_key -N ""
+   cat ~/.ssh/gh_deploy_key.pub >> ~/.ssh/authorized_keys
+   cat ~/.ssh/gh_deploy_key   # copy this private key into the GitHub secret below
+   ```
+3. Allow the deploy user to run the specific commands `deploy.sh` needs without a password prompt:
+   ```bash
+   sudo visudo -f /etc/sudoers.d/medical-scanner-deploy
+   ```
+   Add (replace `deployuser` with your actual SSH username):
+   ```
+   deployuser ALL=(root) NOPASSWD: /usr/bin/mkdir -p /var/www/medical-scanner, /bin/rm -rf /var/www/medical-scanner/dist, /bin/cp -r * /var/www/medical-scanner/dist, /usr/sbin/nginx -t, /bin/systemctl reload nginx
+   ```
+
+**One-time setup on GitHub** — add these under repo **Settings → Secrets and variables → Actions**:
+
+| Secret | Value |
+|---|---|
+| `SSH_HOST` | Your Spaceship VM's IP or hostname |
+| `SSH_USER` | The SSH username (the one granted `NOPASSWD` sudo above) |
+| `SSH_PRIVATE_KEY` | Contents of `~/.ssh/gh_deploy_key` from step 2 |
+| `SSH_PORT` | Only if not port 22 |
+
+Once secrets are set, any push to `main` (including this one) redeploys automatically.
+
 ---
 
 ## ⚠️ Medical Disclaimer

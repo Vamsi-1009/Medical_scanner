@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # Run this on the Spaceship VM inside the cloned repo directory.
+# Also invoked by .github/workflows/deploy.yml over SSH on every push to main —
+# the deploy user needs passwordless sudo for the specific commands below (see README).
 set -euo pipefail
 
 APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
