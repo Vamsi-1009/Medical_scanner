@@ -89,7 +89,7 @@ export default function PrescriptionScanner() {
           method: "POST",
           headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
           body: JSON.stringify({
-            model: "meta-llama/llama-4-scout-17b-16e-instruct",
+            model: "qwen/qwen3.6-27b",
             max_tokens: 2000,
             messages: [{
               role: "user",
@@ -311,7 +311,7 @@ export default function PrescriptionScanner() {
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
-        body: JSON.stringify({ model: "meta-llama/llama-4-scout-17b-16e-instruct", max_tokens: 1500, messages: [{ role: "user", content: "Translate the following prescription summary into " + langNames[lang] + ". Keep medicine names in English. Return only the translation:\n\n" + summary }] })
+        body: JSON.stringify({ model: "qwen/qwen3.6-27b", max_tokens: 1500, messages: [{ role: "user", content: "Translate the following prescription summary into " + langNames[lang] + ". Keep medicine names in English. Return only the translation:\n\n" + summary }] })
       });
       const data = await res.json();
       if (data.choices) setTranslated(data.choices[0].message.content);
@@ -340,7 +340,7 @@ export default function PrescriptionScanner() {
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
-        body: JSON.stringify({ model: "meta-llama/llama-4-scout-17b-16e-instruct", max_tokens: 800, messages: [{ role: "user", content: "Check for drug interactions between: " + names + ". Return ONLY JSON (no markdown): {interactions:[{drug1,drug2,severity,description}],safe:boolean}. If none, return {interactions:[],safe:true}." }] })
+        body: JSON.stringify({ model: "qwen/qwen3.6-27b", max_tokens: 800, messages: [{ role: "user", content: "Check for drug interactions between: " + names + ". Return ONLY JSON (no markdown): {interactions:[{drug1,drug2,severity,description}],safe:boolean}. If none, return {interactions:[],safe:true}." }] })
       });
       const data = await res.json();
       if (data.choices) {
@@ -563,7 +563,7 @@ export default function PrescriptionScanner() {
                       </div>
                       <div className="res-hero-badges">
                         <div className="res-pill-done"><div className="res-pill-dot" />Scan Complete</div>
-                        <div className="res-pill-model">Llama 4 Scout</div>
+                        <div className="res-pill-model">Qwen3.6</div>
                       </div>
                     </div>
                     <div className="res-stats">
