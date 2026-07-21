@@ -11,6 +11,10 @@
   <img src="https://img.shields.io/badge/Privacy-Zero%20Data%20Retention-06b6d4?style=for-the-badge" />
 </p>
 
+<p align="center">
+  <a href="https://webstocking.com/medical-scanner/"><img src="https://img.shields.io/badge/Live%20Demo-webstocking.com%2Fmedical--scanner-0f766e?style=for-the-badge&logo=googlechrome&logoColor=white" /></a>
+</p>
+
 ---
 
 ## 🌟 Why VaidyaDrishti AI?
@@ -132,11 +136,14 @@ Medical data is sacred. VaidyaDrishti processes everything **locally in-browser*
 
 ## 🚀 Getting Started
 
+**🔗 Live Demo:** [webstocking.com/medical-scanner/](https://webstocking.com/medical-scanner/)
+
 **Experience the future of medical scanning in 3 steps:**
 
 1. **Clone the Excellence**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/vaidyadrishti-ai.git
+   git clone https://github.com/Vamsi-1009/Medical_scanner.git
+   cd Medical_scanner
    npm install
    ```
 
