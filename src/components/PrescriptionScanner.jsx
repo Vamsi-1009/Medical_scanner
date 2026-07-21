@@ -14,6 +14,8 @@ const notNull = (v) => v !== null && v !== undefined && v !== "null" && v !== "u
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10MB
 const isValidImageFile = (file) => file && file.type.startsWith("image/") && file.size > 0 && file.size <= MAX_IMAGE_BYTES;
 
+const stripThink = (text) => text.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
+
 export default function PrescriptionScanner() {
   const [phase, setPhase] = useState("upload");
   const [image, setImage] = useState(null);
@@ -91,6 +93,7 @@ export default function PrescriptionScanner() {
           body: JSON.stringify({
             model: "qwen/qwen3.6-27b",
             max_tokens: 2000,
+            reasoning_format: "hidden",
             messages: [{
               role: "user",
               content: [
@@ -103,7 +106,7 @@ export default function PrescriptionScanner() {
         const data = await res.json();
         setScanProgress(95);
         if (data.choices) {
-          let text = data.choices[0].message.content.replaceAll("```json", "").replaceAll("```", "").trim();
+          let text = stripThink(data.choices[0].message.content).replaceAll("```json", "").replaceAll("```", "").trim();
           const parsed = validateParsed(JSON.parse(text));
           setScanProgress(100);
           setTimeout(() => setDoneScanSteps([0, 1, 2, 3]), 400);
@@ -311,10 +314,10 @@ export default function PrescriptionScanner() {
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
-        body: JSON.stringify({ model: "qwen/qwen3.6-27b", max_tokens: 1500, messages: [{ role: "user", content: "Translate the following prescription summary into " + langNames[lang] + ". Keep medicine names in English. Return only the translation:\n\n" + summary }] })
+        body: JSON.stringify({ model: "qwen/qwen3.6-27b", max_tokens: 1500, reasoning_format: "hidden", messages: [{ role: "user", content: "Translate the following prescription summary into " + langNames[lang] + ". Keep medicine names in English. Return only the translation:\n\n" + summary }] })
       });
       const data = await res.json();
-      if (data.choices) setTranslated(data.choices[0].message.content);
+      if (data.choices) setTranslated(stripThink(data.choices[0].message.content));
     } catch (e) { setTranslated("Translation failed. Please try again."); }
     setTranslating(false);
   };
@@ -340,11 +343,11 @@ export default function PrescriptionScanner() {
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
-        body: JSON.stringify({ model: "qwen/qwen3.6-27b", max_tokens: 800, messages: [{ role: "user", content: "Check for drug interactions between: " + names + ". Return ONLY JSON (no markdown): {interactions:[{drug1,drug2,severity,description}],safe:boolean}. If none, return {interactions:[],safe:true}." }] })
+        body: JSON.stringify({ model: "qwen/qwen3.6-27b", max_tokens: 800, reasoning_format: "hidden", messages: [{ role: "user", content: "Check for drug interactions between: " + names + ". Return ONLY JSON (no markdown): {interactions:[{drug1,drug2,severity,description}],safe:boolean}. If none, return {interactions:[],safe:true}." }] })
       });
       const data = await res.json();
       if (data.choices) {
-        let text = data.choices[0].message.content.replaceAll("```json", "").replaceAll("```", "").trim();
+        let text = stripThink(data.choices[0].message.content).replaceAll("```json", "").replaceAll("```", "").trim();
         const ix = JSON.parse(text);
         if (!ix || typeof ix !== "object") throw new Error("Bad interactions response");
         setInteractions(validateInteractions(ix));
