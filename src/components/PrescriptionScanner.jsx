@@ -11,6 +11,9 @@ const SCAN_STEPS = [
 
 const notNull = (v) => v !== null && v !== undefined && v !== "null" && v !== "undefined" && String(v).trim() !== "";
 
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10MB
+const isValidImageFile = (file) => file && file.type.startsWith("image/") && file.size > 0 && file.size <= MAX_IMAGE_BYTES;
+
 export default function PrescriptionScanner() {
   const [phase, setPhase] = useState("upload");
   const [image, setImage] = useState(null);
@@ -44,7 +47,10 @@ export default function PrescriptionScanner() {
   }, []);
 
   const handleFile = useCallback((file) => {
-    if (!file || !file.type.startsWith("image/")) return;
+    if (!isValidImageFile(file)) {
+      if (file && file.size > MAX_IMAGE_BYTES) setError("Image is too large — please use a file under 10MB.");
+      return;
+    }
     setImage(URL.createObjectURL(file));
     setResult(null); setError(null);
     const reader = new FileReader();
@@ -210,6 +216,19 @@ export default function PrescriptionScanner() {
     return obj;
   };
 
+  const validateInteractions = (obj) => {
+    const interactions = Array.isArray(obj.interactions) ? obj.interactions : [];
+    return {
+      safe: typeof obj.safe === "boolean" ? obj.safe : interactions.length === 0,
+      interactions: interactions.map(ix => ({
+        drug1: typeof ix?.drug1 === "string" ? ix.drug1.slice(0, 120) : "Unknown",
+        drug2: typeof ix?.drug2 === "string" ? ix.drug2.slice(0, 120) : "Unknown",
+        severity: typeof ix?.severity === "string" ? ix.severity.slice(0, 40) : "moderate",
+        description: typeof ix?.description === "string" ? ix.description.slice(0, 500) : "",
+      })),
+    };
+  };
+
   const doPrint = () => {
     const w = window.open("", "_blank", "width=700,height=900");
     if (!w) { alert("Popup blocked — please allow popups for this site."); return; }
@@ -301,6 +320,10 @@ export default function PrescriptionScanner() {
   };
 
   const addExtraPage = (file) => {
+    if (!isValidImageFile(file)) {
+      if (file && file.size > MAX_IMAGE_BYTES) setError("Image is too large — please use a file under 10MB.");
+      return;
+    }
     const reader = new FileReader();
     reader.onload = (e) => {
       setExtraImages(prev => [...prev, { url: URL.createObjectURL(file), data: e.target.result.split(",")[1], type: file.type }]);
@@ -324,8 +347,7 @@ export default function PrescriptionScanner() {
         let text = data.choices[0].message.content.replaceAll("```json", "").replaceAll("```", "").trim();
         const ix = JSON.parse(text);
         if (!ix || typeof ix !== "object") throw new Error("Bad interactions response");
-        if (!Array.isArray(ix.interactions)) ix.interactions = [];
-        setInteractions(ix);
+        setInteractions(validateInteractions(ix));
       }
     } catch (e) { setInteractions({ interactions: [], safe: true, error: true }); }
     setChecking(false);

@@ -89,10 +89,12 @@ Medical data is sacred. VaidyaDrishti processes everything **locally in-browser*
                        │
                        ▼
 ┌─────────────────────────────────────────────────────┐
-│           SECURITY + VALIDATION LAYER               │
+│           VALIDATION LAYER                          │
 │   JSON.parse() the response                         │
 │   validateParsed() checks schema, clamps lengths    │
-│   escHtml() sanitizes values — prevents XSS         │
+│   React's JSX auto-escaping renders values safely   │
+│   (escHtml() additionally sanitizes the print/PDF   │
+│   view, which uses raw HTML via document.write)     │
 └──────────────────────┬──────────────────────────────┘
                        │
                        ▼
