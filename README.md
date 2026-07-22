@@ -84,10 +84,11 @@ Medical data is sacred. VaidyaDrishti processes everything **locally in-browser*
                        │
                        ▼
 ┌─────────────────────────────────────────────────────┐
-│           LLAMA 4 SCOUT (on Groq servers)           │
+│              QWEN3.6-27B (on Groq servers)          │
 │   Vision model reads the prescription image         │
 │   Identifies: medicine names, dosage, frequency,    │
 │   duration, instructions, patient name, doctor      │
+│   reasoning_format: "hidden" strips <think> blocks   │
 │   Returns: structured JSON response                 │
 └──────────────────────┬──────────────────────────────┘
                        │
@@ -203,6 +204,12 @@ Every push to `main` triggers [.github/workflows/deploy.yml](.github/workflows/d
 | `SSH_PRIVATE_KEY` | Same deploy key already authorized in `vamsi`'s `~/.ssh/authorized_keys` |
 
 Once secrets are set, any push to `main` redeploys automatically.
+
+**Important:** the `github-actions-deploy` key's line in `~/.ssh/authorized_keys` uses a forced `command="..."` restriction so a leaked key can only run this one deploy step, nothing else:
+```
+command="cd /home/vamsi/apps/Medical_scanner && bash deploy/deploy.sh",no-port-forwarding,no-agent-forwarding,no-X11-forwarding,no-pty ssh-ed25519 AAAA... github-actions-deploy
+```
+A forced command completely overrides whatever the SSH client actually sends — so if this ever needs updating (new deploy path, new script name), edit the `command="..."` value directly in `authorized_keys` on the server. Don't leave duplicate lines for the same key when editing — SSH matches the *first* line for a given key, so a stale duplicate silently wins over your fix.
 
 **The flow only goes one way: GitHub → server.** Make code changes locally, push to `main`, and the server updates itself. Never edit files directly on the server — `deploy.sh` runs `git reset --hard origin/main` on every deploy, which discards anything not committed to GitHub.
 
