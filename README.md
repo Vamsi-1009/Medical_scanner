@@ -1,7 +1,7 @@
 # 👁️ VaidyaDrishti AI
 ### *The Next Generation of Medical Vision Intelligence*
 
-> **VaidyaDrishti AI** is a premium, high-integrity medical prescription analysis platform. By combining cutting-edge **Groq Vision (Qwen3.6-27B)** inference with a world-class **Apple-style interface**, it transforms complex medical handwriting into clear, actionable health data in under 2 seconds.
+> **VaidyaDrishti AI** is a premium, high-integrity medical prescription analysis platform. By combining cutting-edge **Groq Vision (Qwen3.8-27B)** inference with a world-class **Apple-style interface**, it transforms complex medical handwriting into clear, actionable health data in under 2 seconds.
 
 ---
 
@@ -22,7 +22,7 @@
 In an era of rapid digital health, VaidyaDrishti bridges the gap between traditional paper prescriptions and modern healthcare management. It is designed for **speed, accuracy, and aesthetic excellence.**
 
 ### � Vision Intelligence
-Powered by specialized medical prompts on the **Qwen3.6-27B** vision model, our AI doesn't just read text—it understands medical context, dosage patterns, and drug interactions with human-like intuition.
+Powered by specialized medical prompts on the **Qwen3.8-27B** vision model, our AI doesn't just read text—it understands medical context, dosage patterns, and drug interactions with human-like intuition.
 
 ### 🎨 The Experience
 Designed with a "Design-First" philosophy. From the **cinematic ECG splash animation** to the glassmorphic interactive dashboard, every pixel is crafted to provide a premium, effortless user experience.
@@ -79,12 +79,12 @@ Medical data is sacred. VaidyaDrishti processes everything **locally in-browser*
 │   POST https://api.groq.com/openai/v1/chat/...      │
 │   Sends:  Base64 image + structured text prompt     │
 │   Auth:   Bearer VITE_GROQ_API_KEY                  │
-│   Model:  qwen/qwen3.6-27b                          │
+│   Model:  qwen/qwen3.8-27b                          │
 └──────────────────────┬──────────────────────────────┘
                        │
                        ▼
 ┌─────────────────────────────────────────────────────┐
-│              QWEN3.6-27B (on Groq servers)          │
+│              QWEN3.8-27B (on Groq servers)          │
 │   Vision model reads the prescription image         │
 │   Identifies: medicine names, dosage, frequency,    │
 │   duration, instructions, patient name, doctor      │
@@ -129,7 +129,7 @@ Medical data is sacred. VaidyaDrishti processes everything **locally in-browser*
 |---|---|
 | **Core** | React 18 + Vite 5 (Ultra-Fast Build System) |
 | **Logic** | Groq Cloud (Lowest Latency AI Inference) |
-| **Model** | Qwen3.6-27B Vision (Medical-Grade OCR) |
+| **Model** | Qwen3.8-27B Vision (Medical-Grade OCR) |
 | **Aesthetics** | Custom Vanilla CSS (Apple-style Interaction Design) |
 | **Fonts** | Poppins & Inter (Readability Focused Typography) |
 
